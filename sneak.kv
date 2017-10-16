@@ -1,0 +1,64 @@
+SneakGame:
+
+<SneakGame>:
+    gameworld: gameworld
+    app: app
+    GameWorld:
+        id: gameworld
+        gamescreenmanager: gamescreenmanager
+
+        size_of_gameworld: 100*1024
+        zones: {'general': 20000}
+
+        PositionSystem2D:
+            system_id: 'position'
+            gameworld: gameworld
+            zones: ['general']
+
+        RotateSystem2D:
+            system_id: 'rotate'
+            gameworld: gameworld
+            zones: ['general']
+
+        RotateRenderer:
+            system_names: ['renderer', 'position', 'rotate']
+            system_id: 'renderer'
+            gameworld: gameworld
+            zones: ['general']
+            shader_source: 'assets/glsl/positionrotateshader.glsl'
+            force_update: True
+
+        GameMap:
+            gameworld: gameworld
+            size: root.size
+
+        GameView:
+            size: root.size
+            pos: root.pos
+            gameworld: gameworld
+
+        VelSystem:
+            gameworld: gameworld
+            system_id: 'vel'
+            updateable: True
+
+        SteeringSystem:
+            system_id: 'steering'
+            gameworld: gameworld
+            updateable: True
+            
+
+    GameScreenManager:
+        id: gamescreenmanager
+        size: root.size
+        pos: root.pos
+        gameworld: gameworld
+
+<GameScreenManager>:
+    MainScreen:
+        id: main_screen
+
+<MainScreen@GameScreen>:
+    name: 'main'
+    FloatLayout:
+
