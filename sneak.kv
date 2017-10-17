@@ -3,6 +3,8 @@ SneakGame:
 <SneakGame>:
     gameworld: gameworld
     app: app
+    gamemap: gamemap 
+
     GameWorld:
         id: gameworld
         gamescreenmanager: gamescreenmanager
@@ -29,6 +31,7 @@ SneakGame:
             force_update: True
 
         GameMap:
+            id: gamemap
             gameworld: gameworld
             size: root.size
 
@@ -37,13 +40,13 @@ SneakGame:
             pos: root.pos
             gameworld: gameworld
 
-        VelSystem:
-            gameworld: gameworld
-            system_id: 'vel'
-            updateable: True
-
         SteeringSystem:
             system_id: 'steering'
+            gameworld: gameworld
+            updateable: True
+
+        Fear:
+            system_id: 'fear'
             gameworld: gameworld
             updateable: True
             
