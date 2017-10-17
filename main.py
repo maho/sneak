@@ -10,54 +10,11 @@ from kivy.vector import Vector
 from kivent_core.managers.resource_managers import texture_manager
 from kivent_core.systems.gamesystem import GameSystem
 
-import fear
+import fear, steering # noqa: E401
 
 texture_manager.load_atlas('assets/objects.atlas')
 
 
-class SteeringSystem(GameSystem):
-    queue_len = NumericProperty(10)
-    speed_threshold = NumericProperty(20)
-
-    def __init__(self, *a, **kwa):
-        super(SteeringSystem, self).__init__(*a, **kwa)
-        self.queue = []
-        self.angle = 0
-        self.speed = 0
-
-    def on_touch_move(self, touch):
-        self.queue.append(touch.pos)
-        self.queue = self.queue[-self.queue_len:]
-
-        vec = Vector(self.queue[-1]) - self.queue[0]
-        self.angle = vec.angle((0, 100))
-
-        self.apply_angle()
-
-        if vec.length2() > (self.speed_threshold**2):
-            self.speed = 5
-
-    def apply_angle(self):
-        for comp in self.components:
-            eid = comp.entity_id
-
-            e = self.gameworld.entities[eid]
-            e.rotate.r = radians(self.angle)
-
-    def apply_run(self, e):
-        vx, vy = - self.speed * sin(radians(self.angle)), self.speed * cos(radians(self.angle))
-        x, y = e.position.pos
-        e.position.pos = (x + vx, y + vy)
-
-    def update(self, _dt):
-        for comp in self.components:
-            eid = comp.entity_id
-            e = self.gameworld.entities[eid]
-            self.apply_run(e)
-        self.speed /= 2
-
-
-Factory.register('SteeringSystem', cls=SteeringSystem)
 
 
 class SneakGame(Widget):

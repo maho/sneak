@@ -4,7 +4,7 @@ from kivent_core.systems.gamesystem import GameSystem
 
 
 class Fear(GameSystem):
-    PROBE_DIST = 10
+    PROBE_DIST = 3
     PROBE_ANGLE_DIST = 45
     MIN_GRADIENT = 0.1
 
