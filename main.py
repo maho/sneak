@@ -1,20 +1,12 @@
-from math import radians, cos, sin
+import os
 from random import randint
 
 from kivy.app import App
-from kivy.factory import Factory
-from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
-from kivy.vector import Vector
 # import kivent_core
 from kivent_core.managers.resource_managers import texture_manager
-from kivent_core.systems.gamesystem import GameSystem
-
-import fear, steering # noqa: E401
 
 texture_manager.load_atlas('assets/objects.atlas')
-
-
 
 
 class SneakGame(Widget):
@@ -53,18 +45,18 @@ class SneakGame(Widget):
                 'rotate': 0,
                 'steering': {},
                 'position': (100, 100),
-                'fear': {'role': 'danger'}
+                'fear': {'attraction': None}
             }, ['position', 'rotate', 'renderer', 'steering', 'fear'])
 
         # draw rats
         mapw, maph = self.gamemap.size
-        for _x in range(20):
+        for _x in range(25):
             self.gameworld.init_entity({
                 'renderer': {'texture': 'rat',
                              'size':  (20, 20),
                              'render': True},
                 'rotate': 0,
-                'fear': {'role': 'victim'},
+                'fear': {'attraction': None, 'repulsion': None},
                 'position': (randint(0, mapw), randint(0, maph))},
                 ['position', 'rotate', 'renderer', 'fear'])
 
@@ -74,4 +66,12 @@ class SneakApp(App):
 
 
 if __name__ == '__main__':
+    if "DEBUG" in os.environ:
+        def debug_signal_handler(__sig, __frame):
+            import pudb
+            pudb.set_trace()
+
+        import signal
+        signal.signal(signal.SIGINT, debug_signal_handler)
+
     SneakApp().run()

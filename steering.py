@@ -1,6 +1,7 @@
 from math import radians
 
 from kivy.factory import Factory
+from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
@@ -21,20 +22,11 @@ class SteeringSystem(GameSystem):
     def on_touch_down(self, touch):
         self.touch = touch
 
-        # self.queue.append(touch.pos)
-        # self.queue = self.queue[-self.queue_len:]
-
-        # vec = Vector(self.queue[-1]) - self.queue[0]
-        # self.angle = vec.angle((0, 100))
-
-        # self.apply_angle()
-
-        # if vec.length2() > (self.speed_threshold**2):
-        #     self.speed = 5
-
     @classmethod
     def apply_angle_n_run(cls, entity, vector):
         entity.rotate.r = radians(vector.angle((0, 100)))
+        if vector.length2() < defs.steering_min_dist**2:
+            return
         v = vector.normalize()*defs.person_speed
 
         x, y = entity.position.pos

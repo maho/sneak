@@ -1,3 +1,7 @@
+#: import defs defs
+#: import * fear
+#: import * steering
+
 SneakGame:
 
 <SneakGame>:
@@ -8,6 +12,7 @@ SneakGame:
     GameWorld:
         id: gameworld
         gamescreenmanager: gamescreenmanager
+        gmap: gamemap
 
         size_of_gameworld: 100*1024
         zones: {'general': 20000}
@@ -28,12 +33,12 @@ SneakGame:
             gameworld: gameworld
             zones: ['general']
             shader_source: 'assets/glsl/positionrotateshader.glsl'
-            force_update: True
+            #update_time: 0.01
 
         GameMap:
             id: gamemap
             gameworld: gameworld
-            size: root.size
+            size: defs.map_size
 
         GameView:
             size: root.size
