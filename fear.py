@@ -62,12 +62,12 @@ class Fear(GameSystem):
                     if den2 == 0:
                         val += defs.inf
                     else:
-                        val += repulsion / den2
+                        val += repulsion / 6 / den2
                 if attraction and attraction > 0:
                     if den == 0:
                         val -= defs.inf
                     else:
-                        val -= attraction / 16 / den
+                        val -= attraction / 8 / den
 
                 F[i, j] = val
         self.pre_computed_fields[attraction, repulsion] = F
@@ -136,7 +136,7 @@ class Fear(GameSystem):
                     val = F[i, j]
                 ret.x += vx*val
                 ret.y += vy*val
-        if ret.length2() < defs.calc_move_gradient_threshold:
+        if abs(ret.x) + abs(ret.y) < defs.calc_move_gradient_threshold:
             return V((0, 0))
 
         return ret

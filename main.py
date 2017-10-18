@@ -47,7 +47,7 @@ class SneakGame(Widget):
                 'rotate': 0,
                 'steering': {},
                 'position': (100, 100),
-                'fear': {'attraction': None}
+                'fear': {'attraction': 1000}
             }, ['position', 'rotate', 'renderer', 'steering', 'fear'])
 
         # draw rats
