@@ -1,8 +1,9 @@
 # pylint: disable=no-member,unused-variable
+from functools import reduce
 from math import radians, sqrt
 
 from kivy.factory import Factory
-from kivy.logger import Logger
+from kivy.logger import Logger  # noqa: F401
 from kivy.properties import NumericProperty
 from kivy.vector import Vector as V
 from kivent_core.systems.gamesystem import GameSystem
@@ -92,20 +93,24 @@ class Fear(GameSystem):
         w, h = self.gameworld.gmap.size
         w //= self.granulity
         h //= self.granulity
-        F = np.zeros((w, h))
+
+        tosum = []
 
         for c in self.components:
             e = self.entity(c)
             p = e.position.pos
 
             self.roll_field_to_pos(c, p)
-            F = np.add(F, c.field)
+            tosum.append(c.field)
 
+        F = reduce(np.add, tosum)
+        
         return F
 
     @classmethod
     def speed_vector(cls, dx, dy):
-        return V(dx, dy).normalize() * defs.rat_speed
+        #return V(dx, dy).normalize() * defs.rat_speed
+        return (dx * defs.rat_speed, dy * defs.rat_speed)
 
     def calc_move(self, F, p, _c):
         """
@@ -121,12 +126,13 @@ class Fear(GameSystem):
             for dj in (-1, 0, 1):
                 i = oi - di
                 j = oj - dj
-                vec = self.speed_vector(di, dj)
+                vx, vy = self.speed_vector(di, dj)
                 if not (0 < i < w and 0 < j < h):
                     val = defs.inf
                 else:
                     val = F[i, j]
-                ret += vec * val
+                ret.x += vx*val
+                ret.y += vy*val
         if ret.length2() < defs.calc_move_gradient_threshold:
             return V((0, 0))
 

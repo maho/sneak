@@ -1,7 +1,7 @@
 from math import radians
 
 from kivy.factory import Factory
-from kivy.logger import Logger
+# from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem

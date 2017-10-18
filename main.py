@@ -1,3 +1,5 @@
+# pylint: disable=attribute-defined-outside-init
+import cProfile
 import os
 from random import randint
 
@@ -50,7 +52,7 @@ class SneakGame(Widget):
 
         # draw rats
         mapw, maph = self.gamemap.size
-        for _x in range(25):
+        for _x in range(50):
             self.gameworld.init_entity({
                 'renderer': {'texture': 'rat',
                              'size':  (20, 20),
@@ -62,7 +64,15 @@ class SneakGame(Widget):
 
 
 class SneakApp(App):
-    pass
+    def on_start(self):
+        self.profile = cProfile.Profile()
+        self.profile.enable()
+        pass
+
+    def on_stop(self):
+        self.profile.disable()
+        self.profile.dump_stats('sneak.profile')
+        pass
 
 
 if __name__ == '__main__':
