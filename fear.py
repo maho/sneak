@@ -97,6 +97,10 @@ class Fear(GameSystem):
         tosum = []
 
         for c in self.components:
+
+            if not c.attraction and not c.repulsion:
+                continue
+
             e = self.entity(c)
             p = e.position.pos
 
@@ -104,12 +108,11 @@ class Fear(GameSystem):
             tosum.append(c.field)
 
         F = reduce(np.add, tosum)
-        
         return F
 
     @classmethod
     def speed_vector(cls, dx, dy):
-        #return V(dx, dy).normalize() * defs.rat_speed
+        # return V(dx, dy).normalize() * defs.rat_speed
         return (dx * defs.rat_speed, dy * defs.rat_speed)
 
     def calc_move(self, F, p, _c):
