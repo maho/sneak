@@ -1,6 +1,7 @@
 #: import defs defs
 #: import * fear
 #: import * steering
+#: import * kivent_cymunk
 
 SneakGame:
 
@@ -54,6 +55,10 @@ SneakGame:
             system_id: 'fear'
             gameworld: gameworld
             updateable: True
+
+        CymunkPhysics:
+            gameworld: gameworld
+            zones: ['general']
             
 
     GameScreenManager:

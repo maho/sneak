@@ -8,6 +8,8 @@ from kivy.uix.widget import Widget
 # import kivent_core
 from kivent_core.managers.resource_managers import texture_manager
 
+from defedict import defedict
+
 texture_manager.load_atlas('assets/objects.atlas')
 
 
@@ -15,7 +17,7 @@ class SneakGame(Widget):
     def __init__(self, **kwargs):
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
-            ['renderer', 'rotate', 'position', 'steering', 'fear'],
+            ['renderer', 'rotate', 'position', 'steering', 'fear', 'cymunk_physics'],
             callback=self.init_game)
 
     def init_game(self):
@@ -38,29 +40,29 @@ class SneakGame(Widget):
 
     def draw_some_stuff(self):
         # draw person
-        self.gameworld.init_entity({
-                'renderer': {
-                    'texture': 'person',
-                    'size': (50, 50),
-                    'render': True
-                },
-                'rotate': 0,
-                'steering': {},
-                'position': (100, 100),
-                'fear': {'attraction': 1000, 'nomove': True}
-            }, ['position', 'rotate', 'renderer', 'steering', 'fear'])
+        self.gameworld.init_entity(
+                        *defedict({
+                                'renderer': {
+                                    'texture': 'person',
+                                    'size': (50, 50)
+                                },
+                                'fear': {'attraction': 1000, 'nomove': True},
+                             },
+                             ['position', 'rotate', 'renderer', 'steering', 'fear',
+                              'cymunk_physics'])
+                       )
 
         # draw rats
         mapw, maph = self.gamemap.size
-        for _x in range(60):
-            self.gameworld.init_entity({
-                'renderer': {'texture': 'rat',
-                             'size':  (20, 20),
-                             'render': True},
-                'rotate': 0,
-                'fear': {'attraction': None, 'repulsion': 1},
-                'position': (randint(0, mapw), randint(0, maph))},
-                ['position', 'rotate', 'renderer', 'fear'])
+        for _x in range(10):
+            self.gameworld.init_entity(
+                        *defedict({
+                            'renderer': {'texture': 'rat',
+                                         'size': (20, 20)},
+                            'fear': {},
+                            'position': (randint(0, mapw), randint(0, maph))},
+                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
+                           )
 
 
 class SneakApp(App):
