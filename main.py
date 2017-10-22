@@ -47,32 +47,32 @@ class SneakGame(Widget):
                 'rotate': 0,
                 'steering': {},
                 'position': (100, 100),
-                'fear': {'attraction': 1000}
+                'fear': {'attraction': 1000, 'nomove': True}
             }, ['position', 'rotate', 'renderer', 'steering', 'fear'])
 
         # draw rats
         mapw, maph = self.gamemap.size
-        for _x in range(100):
+        for _x in range(60):
             self.gameworld.init_entity({
                 'renderer': {'texture': 'rat',
                              'size':  (20, 20),
                              'render': True},
                 'rotate': 0,
-                'fear': {'attraction': None, 'repulsion': None},
+                'fear': {'attraction': None, 'repulsion': 1},
                 'position': (randint(0, mapw), randint(0, maph))},
                 ['position', 'rotate', 'renderer', 'fear'])
 
 
 class SneakApp(App):
     def on_start(self):
-        self.profile = cProfile.Profile()
-        self.profile.enable()
-        pass
+        if "PROFILE" in os.environ:
+            self.profile = cProfile.Profile()
+            self.profile.enable()
 
     def on_stop(self):
-        self.profile.disable()
-        self.profile.dump_stats('sneak.profile')
-        pass
+        if "PROFILE" in os.environ:
+            self.profile.disable()
+            self.profile.dump_stats('sneak.profile')
 
 
 if __name__ == '__main__':

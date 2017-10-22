@@ -5,7 +5,7 @@ from math import radians, sqrt
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
 from kivy.properties import NumericProperty
-from kivy.vector import Vector as V
+from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
 import numpy as np
 
@@ -27,7 +27,7 @@ def debug_F(f):
 
 
 class Fear(GameSystem):
-    granulity = NumericProperty(5)
+    granulity = NumericProperty(6)
 
     # static data
     pre_computed_fields = {}
@@ -37,6 +37,8 @@ class Fear(GameSystem):
             args['attraction'] = 1000
         if 'repulsion' not in args:
             args['repulsion'] = 1000
+        if 'nomove' not in args:
+            args['nomove'] = False
 
         super(Fear, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
@@ -52,9 +54,11 @@ class Fear(GameSystem):
         h //= self.granulity
         F = np.zeros((w, h))
 
+        G = 50/self.granulity
+
         for i in range(-w//2, w//2):
             for j in range(-h//2, h//2):
-                den2 = ((i/10)**2 + (j/10)**2)
+                den2 = ((i/G)**2 + (j/G)**2)
                 den = sqrt(den2)
 
                 val = 0.0
@@ -115,16 +119,19 @@ class Fear(GameSystem):
         # return V(dx, dy).normalize() * defs.rat_speed
         return (dx * defs.rat_speed, dy * defs.rat_speed)
 
-    def calc_move(self, F, p, _c):
+    def calc_move(self, gf, p, c):
         """
-            F - field
+            gf - global field (including field of object)
             p - position in field
             c - component
         """
+
+        F = np.add(gf, -c.field)  # field without own field
+
         oi, oj = int(p[0] / self.granulity), int(p[1] / self.granulity)
         w, h = F.shape
 
-        ret = V(0.0, 0.0)
+        retx, rety = 0.0, 0.0
         for di in (-1, 0, 1):
             for dj in (-1, 0, 1):
                 i = oi - di
@@ -134,12 +141,12 @@ class Fear(GameSystem):
                     val = defs.inf
                 else:
                     val = F[i, j]
-                ret.x += vx*val
-                ret.y += vy*val
-        if abs(ret.x) + abs(ret.y) < defs.calc_move_gradient_threshold:
-            return V((0, 0))
+                retx += vx*val
+                rety += vy*val
+        if abs(retx) + abs(rety) < defs.calc_move_gradient_threshold:
+            return (0, 0)
 
-        return ret
+        return retx, rety
 
     def entity(self, comp):
         if comp is None:
@@ -150,18 +157,18 @@ class Fear(GameSystem):
         F = self.combined_field()
 
         for c in self.components:
-            if c.attraction or c.repulsion:
+            if c.nomove:
                 continue
             e = self.entity(c)
-            p = e.position.pos
+            px, py = e.position.pos
 
-            vec = self.calc_move(F, p, c)
+            vx, vy = self.calc_move(F, (px, py), c)
 
-            if vec.length2() < defs.rat_speed:  # if no-move vector
+            if abs(vx) + abs(vy) < defs.rat_speed/2:  # if no move vector
                 continue
 
-            e.rotate.r = radians(vec.angle((0, 10)))
-            e.position.pos = tuple(vec + e.position.pos)
+            e.rotate.r = radians(Vector((vx, vy)).angle((0, 10)))
+            e.position.pos = (vx + px, vy + py)
 
 
 Factory.register('Fear', cls=Fear)
