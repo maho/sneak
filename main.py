@@ -25,14 +25,14 @@ class SneakGame(Widget):
         self.set_state()
         self.draw_some_stuff()
 
-    def update(self, __dt):
-        self.gameworld.update(0.02)  # let's try fixed fps, to avoid physics engine mistakes
+    # def update(self, __dt):
+    #     self.gameworld.update(0.02)  # let's try fixed fps, to avoid physics engine mistakes
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
-                                 systems_added=['renderer'],
+                                 systems_added=['renderer', 'cymunk_physics'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer'],
+                                 systems_unpaused=['renderer', 'cymunk_physics'],
                                  screenmanager_screen='main')
 
     def set_state(self):
@@ -46,6 +46,7 @@ class SneakGame(Widget):
                                     'texture': 'person',
                                     'size': (50, 50)
                                 },
+                                'cymunk_physics': {'vel_limit': 10},
                                 'fear': {'attraction': 1000, 'nomove': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',

@@ -2,11 +2,11 @@
 map_size = (1000, 1000)
 
 # characters
-person_speed = 4
+person_speed = 400
 rat_speed = 1
 
 # steering
-steering_min_dist = 2
+steering_min_dist = 50
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion

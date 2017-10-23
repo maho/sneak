@@ -1,7 +1,7 @@
 from math import radians
 
 from kivy.factory import Factory
-# from kivy.logger import Logger
+from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
@@ -24,13 +24,14 @@ class SteeringSystem(GameSystem):
 
     @classmethod
     def apply_angle_n_run(cls, entity, vector):
-        entity.rotate.r = radians(vector.angle((0, 100)))
         if vector.length2() < defs.steering_min_dist**2:
             return
-        v = vector.normalize()*defs.person_speed
+        v = vector.normalize() * defs.person_speed
 
-        x, y = entity.position.pos
-        entity.position.pos = (x + v.x, y + v.y)
+        entity.cymunk_physics.body.velocity = v
+        # entity.cymunk_physics.body.apply_impulse(v*1000)
+        entity.cymunk_physics.body.angle = radians(vector.angle((0, 100)))
+        Logger.debug("v=%s", v)
 
     def update(self, _dt):
         if self.touch is None:

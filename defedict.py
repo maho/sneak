@@ -22,15 +22,16 @@ def defedict(components_to_use, components_order):
             newdict['renderer'] = {'render': True}
         elif x == 'cymunk_physics':
             size = components_to_use['renderer']['size']
+            pos = components_to_use.get('position', (100, 100))
             newdict['cymunk_physics'] = {
                         'main_shape': 'circle',
                         'velocity': (0, 0),
                         'angular_velocity': 0,
                         'angle': 0,
-                        'vel_limit': 0,
+                        'vel_limit': float('inf'),
                         'ang_vel_limit': 0,
-                        'mass': 0,
-                        'position': (100, 100),
+                        'mass': 50,
+                        'position': pos,
                         'col_shapes': [{
                             'shape_type': 'circle',
                             'elasticity': 0.5,

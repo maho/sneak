@@ -52,6 +52,8 @@ class Fear(GameSystem):
             e = self.entity(c)
             x, y = e.position.pos
             for c2 in self.components:
+                if c2.entity_id == c.entity_id:
+                    continue
                 if c2.attraction is None and c2.repulsion is None:
                     continue
 
