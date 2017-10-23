@@ -1,0 +1,13 @@
+# set grid nopolar
+#set grid xtics nomxtics ytics nomytics noztics nomztics nortics nomrtics \
+#  nox2tics nomx2tics noy2tics nomy2tics nocbtics nomcbtics
+# set grid layerdefault   lt 0 linecolor 0 linewidth 0.500,  lt 0 linecolor 0 linewidth 0.500
+set samples 150
+
+set xrange [-1000 : 1000]
+set yrange [-1000 : 1000]
+set zrange [-3 : 3]
+
+#plot 1000/sqrt(x**2) - 1000/(x**2)
+#plot  1000/(x/10)**2 - 1000/16/abs(x/10)
+splot  1000/((x/10)**2+(y/10)**2) - 1000/16/sqrt((x/10)**2+(y/10)**2)

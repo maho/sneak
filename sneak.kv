@@ -14,6 +14,7 @@ SneakGame:
         id: gameworld
         gamescreenmanager: gamescreenmanager
         gmap: gamemap
+        phy: cymunk_physics
 
         size_of_gameworld: 100*1024
         zones: {'general': 20000}
@@ -51,17 +52,17 @@ SneakGame:
             gameworld: gameworld
             updateable: True
 
-        Fear:
-            system_id: 'fear'
-            gameworld: gameworld
-            updateable: True
-
         CymunkPhysics:
             id: cymunk_physics
             system_id: 'cymunk_physics'
             gameworld: gameworld
             zones: ['general']
-            
+
+        Fear:
+            system_id: 'fear'
+            gameworld: gameworld
+            updateable: True
+
 
     GameScreenManager:
         id: gamescreenmanager

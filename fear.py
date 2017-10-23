@@ -1,11 +1,13 @@
-# pylint: disable=no-member,unused-variable
-from math import sqrt
+# pylint: disable=no-member,unused-variable,unused-import
+# from math import sqrt
 
 from cymunk import Vec2d
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
 from kivy.properties import NumericProperty
 from kivent_core.systems.gamesystem import GameSystem
+
+import defs
 
 # def debug_F(f):
 #     w, h = f.shape
@@ -32,12 +34,38 @@ class Fear(GameSystem):
             args['attraction'] = None
         if 'repulsion' not in args:
             args['repulsion'] = None
+        if 'safety' not in args:
+            args['safety'] = None
         if 'nomove' not in args:
             args['nomove'] = False
 
         super(Fear, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
         comp.courage = 1.0
+        comp.stone_contact = False
+
+    def on_add_system(self):
+        gw = self.gameworld
+        gw.phy.add_collision_handler(defs.coltype_rat,
+                                                defs.coltype_stone,
+                                                begin_func=self.rat_vs_stone_begin,
+                                                separate_func=self.rat_vs_stone_end)
+
+    def rat_vs_stone_begin(self, _space, arbiter):
+        srat, sstone = arbiter.shapes
+        assert srat.collision_type, sstone.collision_type == (2, 3)
+        erat = srat.body.data
+
+        crat = self.components[erat]
+        crat.stone_contact = True
+
+    def rat_vs_stone_end(self, _space, arbiter):
+        srat, sstone = arbiter.shapes
+        assert srat.collision_type, sstone.collision_type == (2, 3)
+        erat = srat.body.data
+
+        crat = self.components[erat]
+        crat.stone_contact = False
 
     def entity(self, comp):
         if comp is None:
@@ -54,7 +82,7 @@ class Fear(GameSystem):
             for c2 in self.components:
                 if c2.entity_id == c.entity_id:
                     continue
-                if c2.attraction is None and c2.repulsion is None:
+                if c2.attraction is None and c2.repulsion is None and c2.safety is None:
                     continue
 
                 e2 = self.entity(c2)
@@ -63,16 +91,23 @@ class Fear(GameSystem):
                 vec = Vec2d(x - x2, y - y2)
                 dist2 = vec.get_length_sqrd()
 
-                vecnorm = vec.normalized()
+                if c2.safety:
+                    vel -= vec * c2.safety / dist2 / c.courage
 
-                if c2.repulsion and dist2 < c2.repulsion:
-                    vel -= vecnorm
+                if c2.attraction:
+                    vel -= vec * c2.attraction / dist2 * c.courage
 
-                if c2.attraction and sqrt(dist2) < c2.attraction:
-                    vel += vecnorm
+                if c2.repulsion:
+                    vel += vec * c2.repulsion / dist2 / c.courage
 
-            e.cymunk_physics.body.velocity = vel
+            e.cymunk_physics.body.velocity = vel.normalized() * defs.rat_speed
             e.rotate.r = vel.angle
+
+            # courage things
+            if c.stone_contact:
+                c.courage *= 1.05
+            else:
+                c.courage *= 0.99
 
 
 Factory.register('Fear', cls=Fear)

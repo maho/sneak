@@ -3,7 +3,12 @@ map_size = (1000, 1000)
 
 # characters
 person_speed = 400
-rat_speed = 1
+rat_speed = 100
+
+# physics
+coltype_person = 1
+coltype_rat = 2
+coltype_stone = 3
 
 # steering
 steering_min_dist = 50
