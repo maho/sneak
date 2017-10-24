@@ -6,55 +6,30 @@ import sys
 
 import numpy
 
-arrays = [
-            [random() for x in range(40000)] for x in range(100)
-         ]
-
-npaa = numpy.array(arrays)
+A = numpy.array(range(1000))
+B = numpy.array(range(1000,2000))
 
 
-def fn2():
-    return numpy.sum(npaa, axis=0)
-
-    
-npaa2 = [numpy.array(x).reshape((200, 200)) for x in arrays]
+def normal():
+    for x, y in zip(A, B):
+        _r = 1 / (x**2 + y**2)
 
 
-def fn3():
-    return reduce(numpy.add, npaa2)
+def bynumpy():
+    _R = (1 / (A ** 2 + B ** 2))
 
 
-def recalc():
-    npamove = numpy.empty((200, 200))
-    it = numpy.nditer(npamove, flags=['multi_index'], op_flags=['readwrite'])
-    while not it.finished:
-        i, j = it.multi_index
-        if i == 0 and j == 0:
-            den2 = float('inf')
-            den = float('inf')
-        else:
-            den2 = (i**2 + j**2)
-            den = math.sqrt(den2)
-        it[0][...] = 1000/den2 - 1000/64/den
-        it.iternext()
+def sqnormal():
+    for x, y in zip(A, B):
+        _r = 1 / math.sqrt(x**2 + y**2)
 
 
-def pycalc():
-    arr = numpy.empty((200, 200))
-    for i in range(200):
-        for j in range(200):
-            if i == 0 and j == 0:
-                den2 = float('inf')
-                den = float('inf')
-            else:
-                den2 = (i**2 + j**2)
-                den = math.sqrt(den2)
-            arr[i, j] = 1000/den2 - 1000/64/den
+def sqbynumpy():
+    _R = numpy.sqrt(1 / (A ** 2 + B ** 2))
+
 
 
 if __name__ == '__main__':
     N = int(sys.argv[1])
-    print("fn3", timeit.timeit(stmt=fn3, number=N))
-    print("fn2", timeit.timeit(stmt=fn2, number=N))
-    print("pycalc", timeit.timeit(stmt=pycalc, number=N))
-    print("recalc", timeit.timeit(stmt=recalc, number=N))
+    for x in (normal, sqnormal, bynumpy, sqbynumpy):
+        print(x, timeit.timeit(stmt=x, number=N))

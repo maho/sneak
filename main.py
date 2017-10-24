@@ -100,7 +100,7 @@ class SneakGame(Widget):
     def draw_rats(self):
         mapw, maph = self.gamemap.size
         # draw rats
-        for _x in range(10):
+        for _x in range(100):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'rat',
@@ -112,7 +112,7 @@ class SneakGame(Widget):
                                                        'collision_type': defs.coltype_rat,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 50,
+                                                           'outer_radius': 15,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
