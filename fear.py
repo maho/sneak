@@ -117,9 +117,9 @@ class Fear(GameSystem):
         for c in self.components:
             # courage things
             if c.stone_contact:
-                c.courage *= 1.05
+                c.courage *= 1.01
             else:
-                c.courage *= 0.99
+                c.courage *= 0.98
 
 
 Factory.register('Fear', cls=Fear)

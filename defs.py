@@ -1,3 +1,5 @@
+import math
+
 # game globals
 map_size = (1000, 1000)
 
@@ -12,6 +14,7 @@ coltype_stone = 3
 
 # steering
 steering_min_dist = 50
+angle_step = math.radians(5)
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
