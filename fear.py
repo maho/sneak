@@ -43,6 +43,7 @@ class Fear(GameSystem):
         comp = self.components[cindex]
         comp.courage = 1.0
         comp.stone_contact = False
+        comp.rat_contact = False
 
     def on_add_system(self):
         gw = self.gameworld
@@ -51,20 +52,43 @@ class Fear(GameSystem):
                                                 begin_func=self.rat_vs_stone_begin,
                                                 separate_func=self.rat_vs_stone_end)
 
-    def rat_vs_stone_begin(self, _space, arbiter):
-        srat, sstone = arbiter.shapes
-        assert srat.collision_type, sstone.collision_type == (2, 3)
-        erat = srat.body.data
+        gw.phy.add_collision_handler(defs.coltype_rat, defs.coltype_rat,
+                                     begin_func=self.rat_vs_rat_begin,
+                                     separate_func=self.rat_vs_rat_end)
 
-        crat = self.components[erat]
+    def arbiter2components(self, arbiter, coltype1, coltype2):
+        s1, s2 = arbiter.shapes
+        if s1.collision_type == coltype2:
+            s1, s2 = s2, s1
+
+        assert s1.collision_type, s2.collision_type == (coltype1, coltype2)
+        e1, e2 = s1.body.data, s2.body.data
+
+        c1, c2 = self.components[e1], self.components[e2]
+        assert c1.entity_id == e1
+        assert c2.entity_id == e2
+
+        return c1, c2
+
+    def rat_vs_rat_begin(self, _space, arbiter):
+        c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
+
+        c1.rat_contact = True
+        c2.rat_contact = True
+
+    def rat_vs_rat_end(self, _space, arbiter):
+        c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
+
+        c1.rat_contact = False
+        c2.rat_contact = False
+
+    def rat_vs_stone_begin(self, _space, arbiter):
+        crat, _ign = self.arbiter2components(arbiter, 2, 3)
+
         crat.stone_contact = True
 
     def rat_vs_stone_end(self, _space, arbiter):
-        srat, sstone = arbiter.shapes
-        assert srat.collision_type, sstone.collision_type == (2, 3)
-        erat = srat.body.data
-
-        crat = self.components[erat]
+        crat, _ign = self.arbiter2components(arbiter, 2, 3)
         crat.stone_contact = False
 
     def entity(self, comp):
@@ -106,7 +130,7 @@ class Fear(GameSystem):
         vellengths = np.sqrt(velxs**2 + velys**2)
         dvelxs = velxs / vellengths * defs.rat_speed
         dvelys = velys / vellengths * defs.rat_speed
-        angles = np.arctan2(dvelys, dvelxs) + pi/2
+        angles = np.arctan2(dvelys, dvelxs) + pi / 2
 
         for c, e, velx, vely, angle in zip(self.components, entities, dvelxs, dvelys, angles):
             if c.nomove:
@@ -116,7 +140,7 @@ class Fear(GameSystem):
 
         for c in self.components:
             # courage things
-            if c.stone_contact:
+            if c.rat_contact:
                 c.courage *= 1.01
             else:
                 c.courage *= 0.98
