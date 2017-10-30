@@ -76,6 +76,8 @@ class Fear(GameSystem):
         c1.rat_contact = True
         c2.rat_contact = True
 
+        return True
+
     def rat_vs_rat_end(self, _space, arbiter):
         c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
 
@@ -86,6 +88,8 @@ class Fear(GameSystem):
         crat, _ign = self.arbiter2components(arbiter, 2, 3)
 
         crat.stone_contact = True
+
+        return True
 
     def rat_vs_stone_end(self, _space, arbiter):
         crat, _ign = self.arbiter2components(arbiter, 2, 3)
@@ -141,9 +145,9 @@ class Fear(GameSystem):
         for c in self.components:
             # courage things
             if c.rat_contact:
-                c.courage *= 1.01
+                c.courage = min(defs.max_courage, c.courage * 1.02)
             else:
-                c.courage *= 0.98
+                c.courage *= 0.998
 
 
 Factory.register('Fear', cls=Fear)

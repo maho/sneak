@@ -6,6 +6,7 @@ map_size = (1000, 1000)
 # characters
 person_speed = 400
 rat_speed = 100
+max_courage = 2.0
 
 # physics
 coltype_person = 1
