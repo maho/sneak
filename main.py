@@ -100,7 +100,7 @@ class SneakGame(Widget):
     def draw_rats(self):
         mapw, maph = self.gamemap.size
         # draw rats
-        for _x in range(15):
+        for _x in range(215):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'rat',

@@ -100,13 +100,12 @@ class Fear(GameSystem):
             return None
         return self.gameworld.entities[comp.entity_id]
 
-    def update(self, _dt):
+    def update(self, _dt):  # pylint: disable=too-many-locals
 
-        velxs = np.zeros(len(self.components))
-        velys = np.zeros(len(self.components))
+        N = len(self.components)
+        vels = np.zeros(N * 2).reshape(N, 2)
         entities = [self.entity(c) for c in self.components]
-        xposs = np.array([e.position.pos[0] for e in entities])
-        yposs = np.array([e.position.pos[1] for e in entities])
+        poss = np.array([e.position.pos for e in entities])
         courages = np.array([c.courage for c in self.components])
 
         for c2 in self.components:
@@ -115,33 +114,31 @@ class Fear(GameSystem):
 
             e2 = self.entity(c2)
 
-            vecxs = xposs - e2.position.pos[0]
-            vecys = yposs - e2.position.pos[1]
-            dist2s = vecxs**2 + vecys**2
+            vecs = poss - e2.position.pos
+
+            dist2s = np.sum(vecs**2, axis=1)
 
             if c2.safety:
-                velxs -= vecxs * c2.safety / dist2s / courages
-                velys -= vecys * c2.safety / dist2s / courages
+                vels -= (vecs.T * c2.safety / dist2s / courages).T
 
             if c2.attraction:
-                velxs -= vecxs * c2.attraction / dist2s * courages
-                velys -= vecys * c2.attraction / dist2s * courages
+                vels -= (vecs.T * c2.attraction / dist2s * courages).T
 
             if c2.repulsion:
-                velxs += vecxs * c2.repulsion / dist2s / courages
-                velys += vecys * c2.repulsion / dist2s / courages
+                vels += (vecs.T * c2.repulsion / dist2s / courages).T
 
-        vellengths = np.sqrt(velxs**2 + velys**2)
-        dvelxs = velxs / vellengths * defs.rat_speed
-        dvelys = velys / vellengths * defs.rat_speed
-        angles = np.arctan2(dvelys, dvelxs) + pi / 2
+        dvels = (vels.T / np.linalg.norm(vels, axis=1)).T * defs.rat_speed
+        _angles = np.arctan2(dvels[:, 1], dvels[:, 0]) + pi / 2
 
-        for c, e, velx, vely, angle in zip(self.components, entities, dvelxs, dvelys, angles):
+        for c, e, (velx, vely), _angle in zip(self.components, entities, dvels, _angles):
             if c.nomove:
                 continue
             e.cymunk_physics.body.velocity = (velx, vely)
-            e.rotate.r = angle
+            e.rotate.r = _angle
 
+        self.update_courages()
+
+    def update_courages(self):
         for c in self.components:
             # courage things
             if c.rat_contact:
