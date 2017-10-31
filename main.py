@@ -1,15 +1,23 @@
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init, wrong-import-position
 import cProfile
 import os
 from random import randint
 
-from kivy.app import App
-from kivy.uix.widget import Widget
-# import kivent_core
-from kivent_core.managers.resource_managers import texture_manager
 
-from defedict import defedict
-import defs
+from kivy.app import App
+from kivy.logger import Logger
+from kivy.uix.widget import Widget
+
+if "DEBUG" in os.environ:
+    from kivy.config import Config
+    Config.set('graphics', 'width', '800')
+    Config.set('graphics', 'height', '400')
+
+# import kivent_core
+from kivent_core.managers.resource_managers import texture_manager  # noqa: E402
+
+from defedict import defedict  # noqa: E402
+import defs  # noqa: E402
 
 texture_manager.load_atlas('assets/objects.atlas')
 
@@ -18,7 +26,7 @@ class SneakGame(Widget):
     def __init__(self, **kwargs):
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
-            ['renderer', 'rotate', 'position', 'steering', 'gameview', 'cymunk_physics',
+            ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
               'fear', 'bounds'],
             callback=self.init_game)
 
@@ -32,9 +40,9 @@ class SneakGame(Widget):
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
-                                 systems_added=['renderer', 'cymunk_physics', 'gameview'],
+                                 systems_added=['renderer', 'cymunk_physics'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer', 'cymunk_physics', 'gameview'],
+                                 systems_unpaused=['renderer', 'cymunk_physics'],
                                  screenmanager_screen='main')
 
     def set_state(self):
@@ -42,9 +50,9 @@ class SneakGame(Widget):
 
     def draw_some_stuff(self):
         # draw person
-        self.draw_person()
         self.draw_stones()
         self.draw_rats()
+        self.draw_person()
 
     def draw_person(self):
         main_id = self.gameworld.init_entity(
@@ -73,9 +81,10 @@ class SneakGame(Widget):
                        )
         self.camera.entity_to_focus = main_id
         assert self.camera.focus_entity
+        Logger.debug("main_id=%s", main_id)
 
     def draw_stones(self):
-        mapw, maph = self.gamemap.size
+        mapw, maph = self.gamemap.map_size
         # draw stones
         for _x in range(6):
             self.gameworld.init_entity(
@@ -101,7 +110,7 @@ class SneakGame(Widget):
                            )
 
     def draw_rats(self):
-        mapw, maph = self.gamemap.size
+        mapw, maph = self.gamemap.map_size
         # draw rats
         for _x in range(215):
             self.gameworld.init_entity(
@@ -127,6 +136,7 @@ class SneakGame(Widget):
 
 
 class SneakApp(App):
+
     def on_start(self):
         if "PROFILE" in os.environ:
             self.profile = cProfile.Profile()

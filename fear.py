@@ -24,8 +24,6 @@ import defs
 
 
 class Fear(GameSystem):
-    granulity = NumericProperty(6)
-
     # static data
     pre_computed_fields = {}
 

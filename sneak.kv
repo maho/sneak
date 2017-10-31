@@ -37,18 +37,22 @@ SneakGame:
             gameworld: gameworld
             zones: ['general']
             shader_source: 'assets/glsl/positionrotateshader.glsl'
-            #update_time: 0.01
+            gameview: 'gameview'
 
         GameMap:
             id: gamemap
             gameworld: gameworld
-            size: defs.map_size
+            map_size: defs.map_size
+            size: root.size
 
         GameView:
             id: gameview
             system_id: 'gameview'
             size: root.size
             pos: root.pos
+            window_size: root.size
+            do_scroll: True        
+            do_scroll_lock: True   
             gameworld: gameworld
             currentmap: gamemap
             updateable: True

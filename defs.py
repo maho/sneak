@@ -1,7 +1,7 @@
 import math
 
 # game globals
-map_size = (1000, 1000)
+map_size = (2000, 2000)
 
 # characters
 person_speed = 400
