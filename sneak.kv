@@ -1,5 +1,6 @@
 #: import defs defs
 #: import * fear
+#: import * bounds
 #: import * steering
 #: import * kivent_cymunk
 
@@ -8,7 +9,8 @@ SneakGame:
 <SneakGame>:
     gameworld: gameworld
     app: app
-    gamemap: gamemap 
+    gamemap: gamemap
+    camera: gameview
 
     GameWorld:
         id: gameworld
@@ -43,9 +45,13 @@ SneakGame:
             size: defs.map_size
 
         GameView:
+            id: gameview
+            system_id: 'gameview'
             size: root.size
             pos: root.pos
             gameworld: gameworld
+            currentmap: gamemap
+            updateable: True
 
         SteeringSystem:
             system_id: 'steering'
@@ -60,6 +66,11 @@ SneakGame:
 
         Fear:
             system_id: 'fear'
+            gameworld: gameworld
+            updateable: True
+
+        Bounds:
+            system_id: 'bounds'
             gameworld: gameworld
             updateable: True
 

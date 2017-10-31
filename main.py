@@ -18,7 +18,8 @@ class SneakGame(Widget):
     def __init__(self, **kwargs):
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
-            ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics', 'fear'],
+            ['renderer', 'rotate', 'position', 'steering', 'gameview', 'cymunk_physics',
+              'fear', 'bounds'],
             callback=self.init_game)
 
     def init_game(self):
@@ -31,9 +32,9 @@ class SneakGame(Widget):
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
-                                 systems_added=['renderer', 'cymunk_physics'],
+                                 systems_added=['renderer', 'cymunk_physics', 'gameview'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer', 'cymunk_physics'],
+                                 systems_unpaused=['renderer', 'cymunk_physics', 'gameview'],
                                  screenmanager_screen='main')
 
     def set_state(self):
@@ -46,7 +47,7 @@ class SneakGame(Widget):
         self.draw_rats()
 
     def draw_person(self):
-        self.gameworld.init_entity(
+        main_id = self.gameworld.init_entity(
                         *defedict({
                                 'renderer': {
                                     'texture': 'person',
@@ -68,8 +69,10 @@ class SneakGame(Widget):
                                 'fear': {'attraction': 1000, 'nomove': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
-                              'cymunk_physics'])
+                              'cymunk_physics', 'bounds'])
                        )
+        self.camera.entity_to_focus = main_id
+        assert self.camera.focus_entity
 
     def draw_stones(self):
         mapw, maph = self.gamemap.size
