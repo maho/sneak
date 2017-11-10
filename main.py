@@ -5,6 +5,7 @@ from random import randint
 
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.logger import Logger
 from kivy.uix.widget import Widget
 
@@ -30,6 +31,9 @@ class SneakGame(Widget):
               'fear', 'bounds'],
             callback=self.init_game)
 
+        self.points = None
+        self.lives = None
+
     def init_game(self):
         self.setup_states()
         self.set_state()
@@ -53,6 +57,12 @@ class SneakGame(Widget):
         self.draw_stones()
         self.draw_rats()
         self.draw_person()
+        self.init_callbacks()
+        self.set_data()
+
+    def set_data(self):
+        self.points = 0
+        self.lives = 4
 
     def draw_person(self):
         main_id = self.gameworld.init_entity(
@@ -133,6 +143,21 @@ class SneakGame(Widget):
                             'position': (randint(0, mapw), randint(0, maph))},
                             ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
                            )
+
+    def init_callbacks(self):
+        gw = self.gameworld
+        gw.phy.add_collision_handler(defs.coltype_person,
+                                                defs.coltype_stone,
+                                                begin_func=self.person_vs_stone)
+
+    def person_vs_stone(self, _space, arbiter):
+        spe, ssto = arbiter.shapes
+        if spe.collision_type == defs.coltype_stone:
+            spe, ssto = ssto, spe
+
+        sto = ssto.body.data
+
+        Clock.schedule_once(lambda dt: self.gameworld.remove_entity(sto))
 
 
 class SneakApp(App):

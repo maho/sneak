@@ -11,6 +11,8 @@ SneakGame:
     app: app
     gamemap: gamemap
     camera: gameview
+    lives: self.lives
+    points: self.points
 
     GameWorld:
         id: gameworld
@@ -91,5 +93,27 @@ SneakGame:
 
 <MainScreen@GameScreen>:
     name: 'main'
-    FloatLayout:
+    game: self.parent.parent
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            size_hint: 1.0, 0.1
+            orientation: 'horizontal'
+
+            Label:
+                text: "Points: %s"%root.game.points
+
+            Widget:
+
+            Label:
+                text: "Lives: %s"%root.game.lives
+
+        Widget:
+            size_hint: 1.0, 0.9
+
+
+<Label>:
+    font_name: "assets/fonts/Death Squad.ttf"
+    font_size: 40
 

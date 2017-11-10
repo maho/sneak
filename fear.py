@@ -3,7 +3,6 @@ from math import pi
 
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
-from kivy.properties import NumericProperty
 from kivent_core.systems.gamesystem import GameSystem
 import numpy as np
 
@@ -100,13 +99,15 @@ class Fear(GameSystem):
 
     def update(self, _dt):  # pylint: disable=too-many-locals
 
-        N = len(self.components)
-        vels = np.zeros(N * 2).reshape(N, 2)
-        entities = [self.entity(c) for c in self.components]
-        poss = np.array([e.position.pos for e in entities])
-        courages = np.array([c.courage for c in self.components])
+        comps = [c for c in self.components if c and self.entity(c)]
 
-        for c2 in self.components:
+        N = len(comps)
+        vels = np.zeros(N * 2).reshape(N, 2)
+        entities = [self.entity(c) for c in comps]
+        poss = np.array([e.position.pos for e in entities])
+        courages = np.array([c.courage for c in comps])
+
+        for c2 in comps:
             if c2.attraction is None and c2.repulsion is None and c2.safety is None:
                 continue
 
@@ -128,7 +129,7 @@ class Fear(GameSystem):
         dvels = (vels.T / np.linalg.norm(vels, axis=1)).T * defs.rat_speed
         _angles = np.arctan2(dvels[:, 1], dvels[:, 0]) + pi / 2
 
-        for c, e, (velx, vely), _angle in zip(self.components, entities, dvels, _angles):
+        for c, e, (velx, vely), _angle in zip(comps, entities, dvels, _angles):
             if c.nomove:
                 continue
             e.cymunk_physics.body.velocity = (velx, vely)
@@ -138,6 +139,8 @@ class Fear(GameSystem):
 
     def update_courages(self):
         for c in self.components:
+            if c is None:
+                continue
             # courage things
             if c.rat_contact:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
