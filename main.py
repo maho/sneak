@@ -2,6 +2,7 @@
 import cProfile
 import os
 from random import randint
+import time
 
 
 from kivy.app import App
@@ -33,27 +34,44 @@ class SneakGame(Widget):
 
         self.points = None
         self.lives = None
+        self.grace_timestamp = time.time() + defs.grace_time
 
     def init_game(self):
         self.setup_states()
+        self.on_play()
+
+    def on_play(self):
         self.set_state()
         self.draw_some_stuff()
 
     # def update(self, __dt):
-    #     self.gameworld.update(0.02)  # let's try fixed fps, to avoid physics engine mistakes
+    #
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
-                                 systems_added=['renderer', 'cymunk_physics'],
+                                 systems_added=['renderer', 'cymunk_physics', 'fear'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer', 'cymunk_physics'],
+                                 systems_unpaused=['renderer', 'cymunk_physics', 'fear'],
                                  screenmanager_screen='main')
+
+        self.gameworld.add_state(state_name='fail',
+                                 systems_added=[],
+                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics'],
+                                 systems_unpaused=[],
+                                 screenmanager_screen='main')
+
+        self.gameworld.add_state(state_name='gameover',
+                                 systems_added=[],
+                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics'],
+                                 systems_unpaused=[],
+                                 screenmanager_screen='gameover')
 
     def set_state(self):
         self.gameworld.state = 'main'
 
     def draw_some_stuff(self):
         # draw person
+        self.gameworld.clear_entities()
         self.draw_stones()
         self.draw_rats()
         self.draw_person()
@@ -78,7 +96,7 @@ class SneakGame(Widget):
                                                            'collision_type': defs.coltype_person,
                                                            'shape_info': {
                                                                'inner_radius': 0,
-                                                               'outer_radius': 50,
+                                                               'outer_radius': 20,
                                                                'mass': 50,
                                                                'offset': (0, 0)
                                                            },
@@ -96,7 +114,7 @@ class SneakGame(Widget):
     def draw_stones(self):
         mapw, maph = self.gamemap.map_size
         # draw stones
-        for _x in range(6):
+        for _x in range(defs.num_stones):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'stone',
@@ -109,7 +127,7 @@ class SneakGame(Widget):
                                                        'collision_type': defs.coltype_stone,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 50,
+                                                           'outer_radius': 20,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
@@ -122,7 +140,7 @@ class SneakGame(Widget):
     def draw_rats(self):
         mapw, maph = self.gamemap.map_size
         # draw rats
-        for _x in range(215):
+        for _x in range(defs.num_rats):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'rat',
@@ -140,8 +158,9 @@ class SneakGame(Widget):
                                                        },
                                                        'friction': 1.0
                                                     }]},
-                            'position': (randint(0, mapw), randint(0, maph))},
-                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
+                            'position': (randint(0, mapw), randint(0, maph)),
+                            'bounds': {'padding': 3.0}},
+                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics', 'bounds'])
                            )
 
     def init_callbacks(self):
@@ -149,6 +168,31 @@ class SneakGame(Widget):
         gw.phy.add_collision_handler(defs.coltype_person,
                                                 defs.coltype_stone,
                                                 begin_func=self.person_vs_stone)
+
+        gw.phy.add_collision_handler(defs.coltype_person,
+                                                defs.coltype_rat,
+                                                begin_func=self.person_vs_rat)
+
+    def person_vs_rat(self, _space, _arbiter):
+
+        if time.time() < self.grace_timestamp:
+            return False
+
+        self.lives -= 1
+
+        if self.lives < 0:
+            self.gameworld.state = 'gameover'
+            return
+
+        self.gameworld.state = 'fail'
+
+        def _fn(_dt):
+            self.gameworld.state = 'main'
+            self.grace_timestamp = time.time() + defs.grace_time
+
+        Clock.schedule_once(_fn, defs.freeze_time)
+
+        return True
 
     def person_vs_stone(self, _space, arbiter):
         spe, ssto = arbiter.shapes
@@ -158,6 +202,10 @@ class SneakGame(Widget):
         sto = ssto.body.data
 
         Clock.schedule_once(lambda dt: self.gameworld.remove_entity(sto))
+
+        self.points += 1
+
+        return True
 
 
 class SneakApp(App):

@@ -2,11 +2,17 @@ import math
 
 # game globals
 map_size = (2000, 2000)
+num_stones = 10
+num_rats = 10
 
 # characters
 person_speed = 400
 rat_speed = 100
 max_courage = 2.0
+
+# gameplay things
+freeze_time = 3
+grace_time = 3
 
 # physics
 coltype_person = 1

@@ -58,6 +58,7 @@ SneakGame:
             gameworld: gameworld
             currentmap: gamemap
             updateable: True
+            camera_speed_multiplier: 5
 
         SteeringSystem:
             system_id: 'steering'
@@ -88,29 +89,58 @@ SneakGame:
         gameworld: gameworld
 
 <GameScreenManager>:
-    MainScreen:
+
+    game: self.parent
+
+    GameScreen:
         id: main_screen
-
-<MainScreen@GameScreen>:
-    name: 'main'
-    game: self.parent.parent
-    BoxLayout:
-        orientation: 'vertical'
-
+        name: 'gameover'
         BoxLayout:
-            size_hint: 1.0, 0.1
-            orientation: 'horizontal'
+            Widget:
 
-            Label:
-                text: "Points: %s"%root.game.points
+            BoxLayout:
+                orientation: 'vertical'
+
+                Widget:
+                
+                Label:
+                    text: "Game Over"
+                    font_size: 50
+
+                BoxLayout:
+                    Widget:
+
+                    Button:
+                        font_size: 20
+                        text: "Play Again"
+                        on_press: root.game.on_play()
+                        size_hint: 1.0, 0.3
+                    Widget:
+
+                Widget:
 
             Widget:
 
-            Label:
-                text: "Lives: %s"%root.game.lives
+    GameScreen:
+        id: gameover_screen
+        name: 'main'
+        BoxLayout:
+            orientation: 'vertical'
 
-        Widget:
-            size_hint: 1.0, 0.9
+            BoxLayout:
+                size_hint: 1.0, 0.1
+                orientation: 'horizontal'
+
+                Label:
+                    text: "Points: %s"%root.game.points
+
+                Widget:
+
+                Label:
+                    text: "Lives: %s"%root.game.lives
+
+            Widget:
+                size_hint: 1.0, 0.9
 
 
 <Label>:
