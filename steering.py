@@ -70,7 +70,8 @@ class SteeringSystem(GameSystem):
 
             if self.touch:
                 p = e.position.pos
-                vec = Vector(self.touch.pos) - p
+                tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
+                vec = Vector(tpos) - p
                 self.apply_run(e, vec)
 
 
