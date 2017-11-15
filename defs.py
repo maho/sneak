@@ -12,7 +12,7 @@ max_courage = 2.0
 
 # gameplay things
 freeze_time = 3
-grace_time = 3
+grace_time = 2
 
 # physics
 coltype_person = 1

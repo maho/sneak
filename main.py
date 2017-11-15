@@ -34,7 +34,9 @@ class SneakGame(Widget):
 
         self.points = None
         self.lives = None
+        self.person_eid = None
         self.grace_timestamp = time.time() + defs.grace_time
+        Clock.schedule_interval(self.update, 0.05)
 
     def init_game(self):
         self.setup_states()
@@ -44,8 +46,18 @@ class SneakGame(Widget):
         self.set_state()
         self.draw_some_stuff()
 
-    # def update(self, __dt):
-    #
+    def update(self, __dt):
+        currtime = time.time()
+        if self.person_eid is None:
+            return
+
+        ent = self.gameworld.entities[self.person_eid]
+        if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
+            idx = int(currtime * 20) % 10
+            Logger.debug("in freeze time idx=%s", idx)
+            ent.renderer.texture_key = "person-grace-%s" % idx
+        elif ent.renderer.texture_key != 'person':
+            ent.renderer.texture_key = 'person'
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
@@ -83,7 +95,7 @@ class SneakGame(Widget):
         self.lives = 4
 
     def draw_person(self):
-        main_id = self.gameworld.init_entity(
+        self.person_eid = self.gameworld.init_entity(
                         *defedict({
                                 'renderer': {
                                     'texture': 'person',
@@ -107,9 +119,8 @@ class SneakGame(Widget):
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
                               'cymunk_physics', 'bounds'])
                        )
-        self.camera.entity_to_focus = main_id
+        self.camera.entity_to_focus = self.person_eid
         assert self.camera.focus_entity
-        Logger.debug("main_id=%s", main_id)
 
     def draw_stones(self):
         mapw, maph = self.gamemap.map_size
