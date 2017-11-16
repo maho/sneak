@@ -68,6 +68,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.num_rats = int(self.num_rats * rmult + radd)
             self.num_stones = int(self.num_stones * stomult + stoadd)
             self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size]
+            self.lives = min(self.lives + defs.lives_add, defs.max_lives)
 
         self.gameworld.state = 'levelnum'
 

@@ -9,14 +9,16 @@ num_rats = 2
 # characters
 person_speed = 400
 rat_speed = 100
-max_courage = 2.0
+max_courage = 4.0
 
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 1, 1.5  # on advance level, add, multipiler
-numstones_change = 2, 1  # on advance level
-mapsize_change = 100, 1  # on advance level
+numrats_change = 2, 1.5  # on advance level, add, multipiler
+numstones_change = 1, 1  # on advance level
+mapsize_change = 200, 1  # on advance level
+lives_add = 2
+max_lives = 6
 
 # physics
 coltype_person = 1
