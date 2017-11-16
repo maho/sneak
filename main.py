@@ -8,6 +8,7 @@ import time
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.logger import Logger
+from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
 
 if "DEBUG" in os.environ:
@@ -24,9 +25,11 @@ import defs  # noqa: E402
 texture_manager.load_atlas('assets/objects.atlas')
 
 
-class SneakGame(Widget):
+class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
+
+    levelnum = NumericProperty(0)
+
     def __init__(self, **kwargs):
-        self.levelnum = 0
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
@@ -37,22 +40,34 @@ class SneakGame(Widget):
         self.lives = None
         self.person_eid = None
         self.stones_in_game = 0
+
+        self.num_rats = defs.num_rats
+        self.num_stones = defs.num_stones
+
         Clock.schedule_interval(self.update, 0.05)
 
     def init_game(self):
         self.setup_states()
+        self.advance_level(reset=True)
 
-    def advance_level(self, __reset=False):
+    def advance_level(self, reset=False):
         self.levelnum += 1
 
-        radd, rmult = defs.numrats_change
-        stoadd, stomult = defs.numstones_change
-        mapadd, mapmult = defs.mapsize_change
+        if reset:
+            self.points = 0
+            self.lives = 4
+            self.levelnum = 0
+            self.gamemap.map_size = defs.map_size
+            self.num_rats = defs.num_rats
+            self.num_stones = defs.num_stones
+        else:
+            radd, rmult = defs.numrats_change
+            stoadd, stomult = defs.numstones_change
+            mapadd, mapmult = defs.mapsize_change
 
-        defs.num_rats = int(defs.num_rats * rmult + radd)
-        defs.num_stones = int(defs.num_stones * stomult + stoadd)
-        defs.map_size = [int(x * mapmult + mapadd) for x in defs.map_size]
-        self.gamemap.map_size = defs.map_size
+            self.num_rats = int(self.num_rats * rmult + radd)
+            self.num_stones = int(self.num_stones * stomult + stoadd)
+            self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size]
 
         self.gameworld.state = 'levelnum'
 
@@ -98,8 +113,6 @@ class SneakGame(Widget):
                                  systems_unpaused=[],
                                  screenmanager_screen='gameover')
 
-        self.gameworld.state = 'levelnum'
-
     def draw_some_stuff(self):
         # draw person
         self.gameworld.clear_entities()
@@ -107,11 +120,6 @@ class SneakGame(Widget):
         self.draw_rats()
         self.draw_person()
         self.init_callbacks()
-        self.set_data()
-
-    def set_data(self):
-        self.points = 0
-        self.lives = 4
 
     def draw_person(self):
         self.person_eid = self.gameworld.init_entity(
@@ -145,8 +153,8 @@ class SneakGame(Widget):
         mapw, maph = self.gamemap.map_size
         Logger.debug("mapw, maph = %s, %s", mapw, maph)
         # draw stones
-        self.stones_in_game = defs.num_stones
-        for _x in range(defs.num_stones):
+        self.stones_in_game = self.num_stones
+        for _x in range(self.num_stones):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'stone',
@@ -165,14 +173,14 @@ class SneakGame(Widget):
                                                        },
                                                        'friction': 1.0
                                                     }]},
-                            'position': (randint(100, mapw - 100), randint(100, maph - 100))},
+                            'position': (randint(200, mapw - 200), randint(200, maph - 200))},
                             ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
                            )
 
     def draw_rats(self):
         mapw, maph = self.gamemap.map_size
         # draw rats
-        for _x in range(defs.num_rats):
+        for _x in range(self.num_rats):
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'rat',

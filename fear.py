@@ -53,6 +53,19 @@ class Fear(GameSystem):
                                      begin_func=self.rat_vs_rat_begin,
                                      separate_func=self.rat_vs_rat_end)
 
+    def entity2component(self, e, static={}):
+        e2c = static
+        try:
+            return e2c[e]
+        except KeyError:
+            # recalc entity to components
+            for c in self.components:
+                if c is None:
+                    continue
+                e2c[c.entity_id] = c
+
+            return e2c[e]
+
     def arbiter2components(self, arbiter, coltype1, coltype2):
         s1, s2 = arbiter.shapes
         if s1.collision_type == coltype2:
@@ -61,7 +74,7 @@ class Fear(GameSystem):
         assert s1.collision_type, s2.collision_type == (coltype1, coltype2)
         e1, e2 = s1.body.data, s2.body.data
 
-        c1, c2 = self.components[e1], self.components[e2]
+        c1, c2 = self.entity2component(e1), self.entity2component(e2)
         assert c1.entity_id == e1
         assert c2.entity_id == e2
 
