@@ -1,9 +1,10 @@
 import math
 
-# game globals
-map_size = (2000, 2000)
-num_stones = 10
-num_rats = 10
+# level specific data
+map_size = (800, 800)
+num_stones = 3
+num_rats = 2
+
 
 # characters
 person_speed = 400
@@ -13,6 +14,9 @@ max_courage = 2.0
 # gameplay things
 freeze_time = 3
 grace_time = 2
+numrats_change = 1, 1.5  # on advance level, add, multipiler
+numstones_change = 2, 1  # on advance level
+mapsize_change = 100, 1  # on advance level
 
 # physics
 coltype_person = 1

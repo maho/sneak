@@ -13,6 +13,7 @@ SneakGame:
     camera: gameview
     lives: self.lives
     points: self.points
+    levelnum: self.levelnum
 
     GameWorld:
         id: gameworld
@@ -98,28 +99,43 @@ SneakGame:
         name: 'gameover'
         BoxLayout:
             Widget:
-
             BoxLayout:
                 orientation: 'vertical'
-
                 Widget:
-                
                 Label:
                     text: "Game Over"
                     font_size: 50
-
                 BoxLayout:
                     Widget:
-
                     Button:
                         font_size: 20
                         text: "Play Again"
                         on_press: root.game.on_play()
                         size_hint: 1.0, 0.3
                     Widget:
-
                 Widget:
-
+            Widget:
+    
+    GameScreen:
+        id: levelnum_screen
+        name: 'levelnum'
+        BoxLayout:
+            Widget:
+            BoxLayout:
+                orientation: 'vertical'
+                Widget:
+                Label:
+                    text: "Level %s"%(root.game.levelnum + 1)
+                    font_size: 50
+                BoxLayout:
+                    Widget:
+                    Button:
+                        font_size: 20
+                        text: "Continue"
+                        on_press: root.game.on_play()
+                        size_hint: 1.0, 0.3
+                    Widget:
+                Widget:
             Widget:
 
     GameScreen:

@@ -26,6 +26,7 @@ texture_manager.load_atlas('assets/objects.atlas')
 
 class SneakGame(Widget):
     def __init__(self, **kwargs):
+        self.levelnum = 0
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
@@ -35,16 +36,30 @@ class SneakGame(Widget):
         self.points = None
         self.lives = None
         self.person_eid = None
-        self.grace_timestamp = time.time() + defs.grace_time
+        self.stones_in_game = 0
         Clock.schedule_interval(self.update, 0.05)
 
     def init_game(self):
         self.setup_states()
-        self.on_play()
+
+    def advance_level(self, __reset=False):
+        self.levelnum += 1
+
+        radd, rmult = defs.numrats_change
+        stoadd, stomult = defs.numstones_change
+        mapadd, mapmult = defs.mapsize_change
+
+        defs.num_rats = int(defs.num_rats * rmult + radd)
+        defs.num_stones = int(defs.num_stones * stomult + stoadd)
+        defs.map_size = [int(x * mapmult + mapadd) for x in defs.map_size]
+        self.gamemap.map_size = defs.map_size
+
+        self.gameworld.state = 'levelnum'
 
     def on_play(self):
-        self.set_state()
+        self.gameworld.state = 'main'
         self.draw_some_stuff()
+        self.grace_timestamp = time.time() + defs.grace_time
 
     def update(self, __dt):
         currtime = time.time()
@@ -54,7 +69,6 @@ class SneakGame(Widget):
         ent = self.gameworld.entities[self.person_eid]
         if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
             idx = int(currtime * 20) % 10
-            Logger.debug("in freeze time idx=%s", idx)
             ent.renderer.texture_key = "person-grace-%s" % idx
         elif ent.renderer.texture_key != 'person':
             ent.renderer.texture_key = 'person'
@@ -72,14 +86,19 @@ class SneakGame(Widget):
                                  systems_unpaused=[],
                                  screenmanager_screen='main')
 
+        self.gameworld.add_state(state_name='levelnum',
+                                 systems_added=[],
+                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics'],
+                                 systems_unpaused=[],
+                                 screenmanager_screen='levelnum')
+
         self.gameworld.add_state(state_name='gameover',
                                  systems_added=[],
                                  systems_removed=[], systems_paused=['fear', 'cymunk_physics'],
                                  systems_unpaused=[],
                                  screenmanager_screen='gameover')
 
-    def set_state(self):
-        self.gameworld.state = 'main'
+        self.gameworld.state = 'levelnum'
 
     def draw_some_stuff(self):
         # draw person
@@ -124,7 +143,9 @@ class SneakGame(Widget):
 
     def draw_stones(self):
         mapw, maph = self.gamemap.map_size
+        Logger.debug("mapw, maph = %s, %s", mapw, maph)
         # draw stones
+        self.stones_in_game = defs.num_stones
         for _x in range(defs.num_stones):
             self.gameworld.init_entity(
                         *defedict({
@@ -144,7 +165,7 @@ class SneakGame(Widget):
                                                        },
                                                        'friction': 1.0
                                                     }]},
-                            'position': (randint(0, mapw), randint(0, maph))},
+                            'position': (randint(100, mapw - 100), randint(100, maph - 100))},
                             ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
                            )
 
@@ -215,6 +236,9 @@ class SneakGame(Widget):
         Clock.schedule_once(lambda dt: self.gameworld.remove_entity(sto))
 
         self.points += 1
+        self.stones_in_game -= 1
+        if self.stones_in_game <= 0:
+            self.advance_level()
 
         return True
 
