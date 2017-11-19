@@ -1,9 +1,9 @@
 import math
 
 # level specific data
-map_size = (800, 800)
+map_size = (1000, 1000)
 num_stones = 3
-num_rats = 2
+num_rats = 100
 
 
 # characters
