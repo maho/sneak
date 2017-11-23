@@ -9,7 +9,6 @@ SneakGame:
 <SneakGame>:
     gameworld: gameworld
     app: app
-    gamemap: gamemap
     camera: gameview
     lives: self.lives
     points: self.points
@@ -18,7 +17,6 @@ SneakGame:
     GameWorld:
         id: gameworld
         gamescreenmanager: gamescreenmanager
-        gmap: gamemap
         phy: cymunk_physics
 
         size_of_gameworld: 100*1024
@@ -42,12 +40,6 @@ SneakGame:
             shader_source: 'assets/glsl/positionrotateshader.glsl'
             gameview: 'gameview'
 
-        GameMap:
-            id: gamemap
-            gameworld: gameworld
-            map_size: defs.map_size
-            size: root.size
-
         GameView:
             id: gameview
             system_id: 'gameview'
@@ -55,9 +47,8 @@ SneakGame:
             pos: root.pos
             window_size: root.size
             do_scroll: True        
-            do_scroll_lock: True   
+            do_scroll_lock: False
             gameworld: gameworld
-            currentmap: gamemap
             updateable: True
             camera_speed_multiplier: 5
 
@@ -78,10 +69,10 @@ SneakGame:
             gameworld: gameworld
             updateable: True
 
-        Bounds:
-            system_id: 'bounds'
-            gameworld: gameworld
-            updateable: True
+        # Bounds:
+        #     system_id: 'bounds'
+        #     gameworld: gameworld
+        #     updateable: True
 
 
     GameScreenManager:

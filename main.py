@@ -33,7 +33,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
-              'fear', 'bounds'],
+              'fear'],  # , 'bounds'], # TODO
             callback=self.init_game)
 
         self.points = None
@@ -57,7 +57,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.points = 0
             self.lives = 4
             self.levelnum = 0
-            self.gamemap.map_size = defs.map_size
+            # self.gamemap.map_size = defs.map_size # TODO:
             self.num_rats = defs.num_rats
             self.num_stones = defs.num_stones
         else:
@@ -67,7 +67,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
             self.num_rats = int(self.num_rats * rmult + radd)
             self.num_stones = int(self.num_stones * stomult + stoadd)
-            self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size]
+            # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
 
         self.gameworld.state = 'levelnum'
@@ -145,13 +145,13 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                 'fear': {'attraction': 1000, 'nomove': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
-                              'cymunk_physics', 'bounds'])
+                              'cymunk_physics'])
                        )
         self.camera.entity_to_focus = self.person_eid
         assert self.camera.focus_entity
 
     def draw_stones(self):
-        mapw, maph = self.gamemap.map_size
+        mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
         Logger.debug("mapw, maph = %s, %s", mapw, maph)
         # draw stones
         self.stones_in_game = self.num_stones
@@ -179,7 +179,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                            )
 
     def draw_rats(self):
-        mapw, maph = self.gamemap.map_size
+        mapw, maph = defs.map_size
         # draw rats
         for _x in range(self.num_rats):
             self.gameworld.init_entity(
@@ -199,9 +199,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        },
                                                        'friction': 1.0
                                                     }]},
-                            'position': (randint(0, mapw), randint(0, maph)),
-                            'bounds': {'padding': 3.0}},
-                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics', 'bounds'])
+                            'position': (randint(0, mapw), randint(0, maph))},
+                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
                            )
 
     def init_callbacks(self):
