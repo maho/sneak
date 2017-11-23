@@ -3,7 +3,7 @@ import math
 # level specific data
 map_size = (1000, 1000)
 num_stones = 3
-num_rats = 100
+num_rats = 5
 
 
 # characters
@@ -27,7 +27,7 @@ coltype_stone = 3
 
 # steering
 steering_min_dist = 50
-angle_step = math.radians(5)
+angle_step = math.radians(6)
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion

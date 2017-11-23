@@ -5,7 +5,6 @@ from kivent_core.systems.gamesystem import GameSystem
 
 class Bounds(GameSystem):
     def update(self, _dt):
-        return True
         mw, mh = self.gameworld.gmap.map_size
 
         for c in self.components:

@@ -157,7 +157,7 @@ class Fear(GameSystem):
             # courage things
             if c.rat_contact:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
-                Logger.debug("CONTACT: increase courage to %s", c.courage)
+                # Logger.debug("CONTACT: increase courage to %s", c.courage)
             else:
                 c.courage *= 0.998
 
