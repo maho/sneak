@@ -33,7 +33,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
-              'fear'],  # , 'bounds'], # TODO
+              'fear'],              
             callback=self.init_game)
 
         self.points = None
