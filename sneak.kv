@@ -1,6 +1,5 @@
 #: import defs defs
 #: import * fear
-#: import * bounds
 #: import * steering
 #: import * kivent_cymunk
 
@@ -69,10 +68,12 @@ SneakGame:
             gameworld: gameworld
             updateable: True
 
-        # Bounds:
-        #     system_id: 'bounds'
-        #     gameworld: gameworld
-        #     updateable: True
+        AnimationSystem:
+            id: animation
+            gameworld: gameworld
+            system_id: 'animation'
+            zones: ['general']
+
 
 
     GameScreenManager:

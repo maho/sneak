@@ -33,7 +33,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
-              'fear'],              
+              'fear', 'animation'],              
             callback=self.init_game)
 
         self.points = None
@@ -48,7 +48,21 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def init_game(self):
         self.setup_states()
+        self.load_models()
         self.advance_level(reset=True)
+
+    def load_models(self):
+        mm = self.gameworld.model_manager
+        for x in range(12):
+            mm.load_textured_rectangle('vertex_format_4f', 50., 50., 'person-walk-%02d'%x, 'person-walk-%02d'%x)
+
+        am = self.gameworld.animation_manager
+
+        animation_frames = [{'texture': 'person-walk-%02d'%x,
+                            'model': 'person-walk-%02d'%x,
+                            'duration': 50} 
+                                for x in range(12)]
+        am.load_animation('walk', 12, animation_frames)
 
     def advance_level(self, reset=False):
         self.levelnum += 1
@@ -83,17 +97,17 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             return
 
         ent = self.gameworld.entities[self.person_eid]
-        if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
-            idx = int(currtime * 20) % 10
-            ent.renderer.texture_key = "person-grace-%s" % idx
-        elif ent.renderer.texture_key != 'person':
-            ent.renderer.texture_key = 'person'
+        # if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
+        #     idx = int(currtime * 20) % 10
+        #     ent.renderer.texture_key = "person-grace-%s" % idx
+        # elif ent.renderer.texture_key != 'person':
+        #     ent.renderer.texture_key = 'person'
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
-                                 systems_added=['renderer', 'cymunk_physics', 'fear'],
+                                 systems_added=['renderer', 'cymunk_physics', 'fear', 'animation'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer', 'cymunk_physics', 'fear'],
+                                 systems_unpaused=['renderer', 'cymunk_physics', 'fear', 'animation'],
                                  screenmanager_screen='main')
 
         self.gameworld.add_state(state_name='fail',
@@ -126,8 +140,9 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.person_eid = self.gameworld.init_entity(
                         *defedict({
                                 'renderer': {
-                                    'texture': 'person',
-                                    'size': (50, 50)
+                                    'texture': 'person-walk-00',
+                                    'model_key': 'person-walk-00',
+                                    'size': (50, 50),
                                 },
                                 'cymunk_physics': {'vel_limit': 10,
                                                    'col_shapes': [{
@@ -143,9 +158,10 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            'friction': 1.0
                                                         }]},
                                 'fear': {'attraction': 1000, 'nomove': True},
+                                'animation': {'name': 'walk', 'loop': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
-                              'cymunk_physics'])
+                              'cymunk_physics', 'animation'])
                        )
         self.camera.entity_to_focus = self.person_eid
         assert self.camera.focus_entity
