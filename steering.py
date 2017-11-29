@@ -1,4 +1,5 @@
 from math import radians, degrees
+import time
 
 from kivy.base import EventLoop
 from kivy.core.window import Keyboard
@@ -20,6 +21,10 @@ class SteeringSystem(GameSystem):
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
 
+    def init_component(self, cindex, eid, zone, args):
+        super(SteeringSystem, self).init_component(cindex, eid, zone, args)
+        comp = self.components[cindex]
+
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(None, key)
         self.keys_pressed.remove(code)
@@ -36,8 +41,7 @@ class SteeringSystem(GameSystem):
     def on_touch_down(self, touch):
         self.touch = touch
 
-    @classmethod
-    def apply_run(cls, entity, vector=None):
+    def apply_run(self, comp, entity, vector=None):
         if vector and vector.length2() < defs.steering_min_dist**2:
             return
 
@@ -48,12 +52,10 @@ class SteeringSystem(GameSystem):
             v = Vector((0, defs.person_speed)).rotate(degrees(entity.cymunk_physics.body.angle))
 
         entity.cymunk_physics.body.velocity = v
-        # entity.cymunk_physics.body.apply_impulse(v*1000)
+        #entity.cymunk_physics.body.apply_impulse(v)
+
 
     def update(self, _dt):
-        if self.touch is None and not ({'up', 'left', 'right'} & self.keys_pressed):
-            return
-
         for comp in self.components:
             if comp is None:
                 continue
@@ -66,13 +68,14 @@ class SteeringSystem(GameSystem):
             if 'right' in self.keys_pressed:
                 body.angle -= defs.angle_step
             if 'up' in self.keys_pressed:
-                self.apply_run(e)
+                self.apply_run(comp, e)
 
             if self.touch:
                 p = e.position.pos
                 tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
                 vec = Vector(tpos) - p
-                self.apply_run(e, vec)
+                self.apply_run(comp, e, vec)
+
 
 
 Factory.register('SteeringSystem', cls=SteeringSystem)

@@ -49,11 +49,12 @@ SneakGame:
             do_scroll_lock: False
             gameworld: gameworld
             updateable: True
-            camera_speed_multiplier: 5
+            # camera_speed_multiplier: 5
 
         SteeringSystem:
             system_id: 'steering'
             gameworld: gameworld
+            game: root
             camera: gameview
             updateable: True
 
@@ -62,6 +63,7 @@ SneakGame:
             system_id: 'cymunk_physics'
             gameworld: gameworld
             zones: ['general']
+            damping: 0.1
 
         Fear:
             system_id: 'fear'

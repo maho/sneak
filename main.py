@@ -33,7 +33,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         super(SneakGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(
             ['renderer', 'rotate', 'position', 'steering', 'cymunk_physics',
-              'fear', 'animation'],              
+              'fear', 'animation'],
             callback=self.init_game)
 
         self.points = None
@@ -44,6 +44,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.num_rats = defs.num_rats
         self.num_stones = defs.num_stones
 
+        self.person_anim = 'walk'
+
         Clock.schedule_interval(self.update, 0.05)
 
     def init_game(self):
@@ -52,17 +54,20 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.advance_level(reset=True)
 
     def load_models(self):
+        self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
+        self.load_animation('grace', 50, 50, "person-grace-%02d", 6)
+
+    def load_animation(self, animname, w, h, pattern, nframes):
         mm = self.gameworld.model_manager
-        for x in range(12):
-            mm.load_textured_rectangle('vertex_format_4f', 50., 50., 'person-walk-%02d'%x, 'person-walk-%02d'%x)
+        for x in range(nframes):
+            mm.load_textured_rectangle('vertex_format_4f', w, h, pattern % x, pattern % x)
 
         am = self.gameworld.animation_manager
 
-        animation_frames = [{'texture': 'person-walk-%02d'%x,
-                            'model': 'person-walk-%02d'%x,
-                            'duration': 50} 
-                                for x in range(12)]
-        am.load_animation('walk', 12, animation_frames)
+        animation_frames = [{'texture': pattern % x,
+                             'model': pattern % x,
+                             'duration': 50} for x in range(nframes)]
+        am.load_animation(animname, nframes, animation_frames)
 
     def advance_level(self, reset=False):
         self.levelnum += 1
@@ -71,7 +76,6 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.points = 0
             self.lives = 4
             self.levelnum = 0
-            # self.gamemap.map_size = defs.map_size # TODO:
             self.num_rats = defs.num_rats
             self.num_stones = defs.num_stones
         else:
@@ -95,19 +99,30 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         currtime = time.time()
         if self.person_eid is None:
             return
-
         ent = self.gameworld.entities[self.person_eid]
-        # if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
-        #     idx = int(currtime * 20) % 10
-        #     ent.renderer.texture_key = "person-grace-%s" % idx
-        # elif ent.renderer.texture_key != 'person':
-        #     ent.renderer.texture_key = 'person'
+
+        old_anim = self.person_anim
+        if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
+            self.person_anim = 'grace'
+        else:
+            speed = ent.cymunk_physics.body.speed
+            Logger.debug("speed = %s", speed)
+            if  speed > 80:
+                self.person_anim = 'walk'
+            else:
+                self.person_anim = None
+
+        if self.person_anim is None:
+            ent.animation.current_frame_index = 0
+        elif self.person_anim != old_anim:
+            ent.animation.animation = self.person_anim
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
                                  systems_added=['renderer', 'cymunk_physics', 'fear', 'animation'],
                                  systems_removed=[], systems_paused=[],
-                                 systems_unpaused=['renderer', 'cymunk_physics', 'fear', 'animation'],
+                                 systems_unpaused=['renderer', 'cymunk_physics', 'fear',
+                                                    'animation'],
                                  screenmanager_screen='main')
 
         self.gameworld.add_state(state_name='fail',
@@ -144,7 +159,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                     'model_key': 'person-walk-00',
                                     'size': (50, 50),
                                 },
-                                'cymunk_physics': {'vel_limit': 10,
+                                'cymunk_physics': {'vel_limit': 1000,
                                                    'col_shapes': [{
                                                            'shape_type': 'circle',
                                                            'elasticity': 0.5,
@@ -158,7 +173,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            'friction': 1.0
                                                         }]},
                                 'fear': {'attraction': 1000, 'nomove': True},
-                                'animation': {'name': 'walk', 'loop': True},
+                                'animation': {'name': self.person_anim, 'loop': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
                               'cymunk_physics', 'animation'])
