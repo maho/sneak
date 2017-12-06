@@ -1,6 +1,8 @@
 # pylint: disable=no-member,unused-variable,unused-import
 from math import pi
 
+from kivy.base import EventLoop
+from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
 from kivent_core.systems.gamesystem import GameSystem
@@ -25,6 +27,11 @@ import defs
 class Fear(GameSystem):
     # static data
     pre_computed_fields = {}
+    
+    def __init__(self, *a, **kwa):
+        super(Fear, self).__init__(*a, **kwa)
+
+        EventLoop.window.bind(on_key_up=self.on_key_up)
 
     def init_component(self, cindex, eid, zone, args):
         if 'attraction' not in args:
@@ -35,12 +42,29 @@ class Fear(GameSystem):
             args['safety'] = None
         if 'nomove' not in args:
             args['nomove'] = False
+        if 'shout' not in args:
+            args['shout'] = False
 
         super(Fear, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
         comp.courage = 1.0
         comp.stone_contact = False
         comp.rat_contact = False
+
+    def on_key_up(self, _win, key, *_args, **_kwargs):
+        code = Keyboard.keycode_to_string(Window._system_keyboard, key)
+
+        if code != 'a':
+            return
+
+        for c in self.components:
+            if c is None:
+                continue
+            if not c.shout:
+                continue
+
+            self.shout(c)
+
 
     def on_add_system(self):
         gw = self.gameworld
@@ -109,6 +133,27 @@ class Fear(GameSystem):
         if comp is None:
             return None
         return self.gameworld.entities[comp.entity_id]
+
+    def shout(self, c):
+        comps = [c for c in self.components if c and self.entity(c)]
+        entities = [self.entity(c) for c in comps]
+        poss = np.array([e.position.pos for e in entities])
+        courages = np.array([c.courage for c in comps])
+        
+        for c in comps:
+            if not c.shout:
+                continue
+            
+            e2 = self.entity(c)
+
+            vecs = poss - e2.position.pos
+            dist2s = np.sum(vecs**2, axis=1)
+
+            courages = np.where(dist2s < defs.shout_range**2, courages/2, courages)
+
+            for c2, courage in zip(comps, courages):
+                c2.courage = courage
+
 
     def update(self, _dt):  # pylint: disable=too-many-locals
 

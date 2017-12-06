@@ -1,5 +1,5 @@
 # pylint: disable=attribute-defined-outside-init, wrong-import-position
-import cProfile
+# import cProfile
 import os
 from random import randint
 import time
@@ -10,6 +10,7 @@ from kivy.clock import Clock
 from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
+import kivent_cymunk # noqa:
 
 if "DEBUG" in os.environ:
     from kivy.config import Config
@@ -21,6 +22,8 @@ from kivent_core.managers.resource_managers import texture_manager  # noqa: E402
 
 from defedict import defedict  # noqa: E402
 import defs  # noqa: E402
+import fear # noqa:
+import steering # noqa:
 
 texture_manager.load_atlas('assets/objects.atlas')
 
@@ -172,7 +175,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            },
                                                            'friction': 1.0
                                                         }]},
-                                'fear': {'attraction': 1000, 'nomove': True},
+                                'fear': {'attraction': 1000, 'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',

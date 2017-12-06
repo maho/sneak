@@ -2,7 +2,7 @@ from math import radians, degrees
 import time
 
 from kivy.base import EventLoop
-from kivy.core.window import Keyboard
+from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
@@ -11,28 +11,28 @@ from kivent_core.systems.gamesystem import GameSystem
 import defs
 
 
-class SteeringSystem(GameSystem):
+class SneakSteeringSystem(GameSystem):
     queue_len = NumericProperty(10)
 
     def __init__(self, *a, **kwa):
-        super(SteeringSystem, self).__init__(*a, **kwa)
+        super(SneakSteeringSystem, self).__init__(*a, **kwa)
         self.touch = None
         self.keys_pressed = set()
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
 
     def init_component(self, cindex, eid, zone, args):
-        super(SteeringSystem, self).init_component(cindex, eid, zone, args)
+        super(SneakSteeringSystem, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
-        code = Keyboard.keycode_to_string(None, key)
+        code = Keyboard.keycode_to_string(Window._system_keyboard, key)
         self.keys_pressed.remove(code)
 
     def on_key_down(self, __win, key, *__largs, **__kwargs):
         # very dirty hack, but: we don't have any instance of keyboard anywhere, and
         # keycode_to_string should be in fact classmethod, so passing None as self is safe
-        code = Keyboard.keycode_to_string(None, key)
+        code = Keyboard.keycode_to_string(Window._system_keyboard, key)
         self.keys_pressed.add(code)
 
     def on_touch_up(self, __touch):
@@ -78,4 +78,4 @@ class SteeringSystem(GameSystem):
 
 
 
-Factory.register('SteeringSystem', cls=SteeringSystem)
+Factory.register('SneakSteeringSystem', cls=SneakSteeringSystem)

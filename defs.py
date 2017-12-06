@@ -2,13 +2,13 @@ import math
 
 # level specific data
 map_size = (1000, 1000)
-num_stones = 3
-num_rats = 5
+num_stones = 4
+num_rats = 20
 
 
 # characters
 person_speed = 400
-rat_speed = 100
+rat_speed = 120
 max_courage = 4.0
 
 # gameplay things
@@ -19,6 +19,7 @@ numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
 max_lives = 6
+shout_range = 300
 
 # physics
 coltype_person = 1

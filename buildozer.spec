@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Sneak
+title = Sneakk
 
 # (str) Package name
-package.name = sneak
+package.name = sneakk
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = maho
@@ -13,7 +13,7 @@ package.domain = maho
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,txt,otf,atlas,glsl
+source.include_exts = py,png,jpg,kv,txt,otf,atlas,glsl,ttf
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, doc, img
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.0
+version = 0.2
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -36,7 +36,12 @@ version = 0.0
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = python3crystax,kivy,cymunk,kivent_core,kivent_cymunk
+requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy
+
+# android.ndk_path = /home/maho/ndk/crystax-ndk-10.3.2
+# requirements = python3crystax,hostpython3crystax,kivy,kivent_core
+# android.ndk_path = /home/bdozer/ndk/android-ndk-r15c
+
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -94,16 +99,16 @@ fullscreen = 1
 #android.minapi = 9
 
 # (int) Android SDK version to use
-#android.sdk = 20
+# android.sdk = 25
 
 # (str) Android NDK version to use
 #android.ndk = 9c
+#android.ndk = 15c
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path = /home/maho/ndk/crystax-ndk-10.3.2
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
 #android.sdk_path =
@@ -147,7 +152,7 @@ android.ndk_path = /home/maho/ndk/crystax-ndk-10.3.2
 #android.gradle_dependencies =
 
 # (str) python-for-android branch to use, defaults to master
-#p4a.branch = stable
+# p4a.branch = stable
 
 # (str) OUYA Console category. Should be one of GAME or APP
 # If you leave this blank, OUYA support will not be enabled
@@ -190,7 +195,7 @@ android.arch = armeabi-v7a
 #
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
-#p4a.source_dir =
+p4a.source_dir = /home/maho/workspace/sneak/.p4a
 
 # (str) The directory in which python-for-android should look for your own build recipes (if any)
 #p4a.local_recipes =
@@ -218,6 +223,9 @@ android.arch = armeabi-v7a
 
 
 [buildozer]
+
+
+build_type = ant
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
@@ -268,3 +276,6 @@ warn_on_root = 1
 #    Then, invoke the command line with the "demo" profile:
 #
 #buildozer --profile demo android debug
+
+# [app@p2]
+
