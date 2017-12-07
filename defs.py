@@ -2,8 +2,8 @@ import math
 
 # level specific data
 map_size = (1000, 1000)
-num_stones = 4
-num_rats = 20
+num_stones = 1
+num_rats = 10
 
 
 # characters
@@ -14,7 +14,7 @@ max_courage = 4.0
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 2, 1.5  # on advance level, add, multipiler
+numrats_change = 10, 1.1  # on advance level, add, multipiler
 numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
@@ -26,10 +26,11 @@ coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
+force_threshold = 3
+
 # steering
 steering_min_dist = 50
 angle_step = math.radians(6)
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
-calc_move_gradient_threshold = 0.5

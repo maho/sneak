@@ -109,7 +109,6 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.person_anim = 'grace'
         else:
             speed = ent.cymunk_physics.body.speed
-            Logger.debug("speed = %s", speed)
             if  speed > 80:
                 self.person_anim = 'walk'
             else:
@@ -155,6 +154,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.init_callbacks()
 
     def draw_person(self):
+        if self.person_anim == None:
+            self.person_anim = 'grace'
         self.person_eid = self.gameworld.init_entity(
                         *defedict({
                                 'renderer': {
@@ -175,7 +176,9 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            },
                                                            'friction': 1.0
                                                         }]},
-                                'fear': {'attraction': 1000, 'nomove': True, 'shout': True},
+                                  'fear': {'attraction': 1000, 
+                                           'repulsion': 1500,
+                                           'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
                              },
                              ['position', 'rotate', 'renderer', 'steering', 'fear',
@@ -186,7 +189,6 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def draw_stones(self):
         mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
-        Logger.debug("mapw, maph = %s, %s", mapw, maph)
         # draw stones
         self.stones_in_game = self.num_stones
         for _x in range(self.num_stones):
@@ -219,7 +221,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'rat',
-                                         'size': (20, 20)},
+                                         'size': (20, 20),
+                                         'copy': True},
                             'fear': {},
                             'cymunk_physics': {'col_shapes': [{
                                                        'shape_type': 'circle',

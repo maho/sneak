@@ -6,6 +6,7 @@ SneakGame:
     gameworld: gameworld
     app: app
     camera: gameview
+    fear: fear
     lives: self.lives
     points: self.points
     levelnum: 0
@@ -63,6 +64,7 @@ SneakGame:
             damping: 0.1
 
         Fear:
+            id: fear
             system_id: 'fear'
             gameworld: gameworld
             updateable: True
@@ -149,6 +151,19 @@ SneakGame:
 
             Widget:
                 size_hint: 1.0, 0.9
+
+            # BoxLayout:
+            #     size_hint: 1.0, 0.1
+            #     orientation: 'horizontal'
+
+            #     Button:
+            #         size_hint: 0.1, 1.0
+            #         text: "Shout"
+            #         on_press: root.game.fear.shout()
+
+            #     Widget:
+            #         size_hint: 0.9, 1.0
+
 
 
 <Label>:

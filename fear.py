@@ -1,7 +1,9 @@
 # pylint: disable=no-member,unused-variable,unused-import
+from functools import partial
 from math import pi
 
 from kivy.base import EventLoop
+from kivy.clock import Clock
 from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
@@ -49,7 +51,7 @@ class Fear(GameSystem):
         comp = self.components[cindex]
         comp.courage = 1.0
         comp.stone_contact = False
-        comp.rat_contact = False
+        comp.rat_contact = 0
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -57,13 +59,7 @@ class Fear(GameSystem):
         if code != 'a':
             return
 
-        for c in self.components:
-            if c is None:
-                continue
-            if not c.shout:
-                continue
-
-            self.shout(c)
+        self.shout()
 
 
     def on_add_system(self):
@@ -107,16 +103,24 @@ class Fear(GameSystem):
     def rat_vs_rat_begin(self, _space, arbiter):
         c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
 
-        c1.rat_contact = True
-        c2.rat_contact = True
+        c1.rat_contact += 1
+        c2.rat_contact += 1
+
+        Logger.debug("COL:%s vs %s, states=%s", c1.entity_id, c2.entity_id,
+                [int(x.rat_contact) for x in self.components if x and not x.nomove]
+                )
 
         return True
 
     def rat_vs_rat_end(self, _space, arbiter):
         c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
 
-        c1.rat_contact = False
-        c2.rat_contact = False
+        c1.rat_contact -= 1
+        c2.rat_contact -= 1
+        Logger.debug("END:%s vs %s, states=%s", c1.entity_id, c2.entity_id,
+                [int(x.rat_contact) for x in self.components if x and not x.nomove]
+                )
+        return True
 
     def rat_vs_stone_begin(self, _space, arbiter):
         crat, _ign = self.arbiter2components(arbiter, 2, 3)
@@ -134,25 +138,21 @@ class Fear(GameSystem):
             return None
         return self.gameworld.entities[comp.entity_id]
 
-    def shout(self, c):
-        comps = [c for c in self.components if c and self.entity(c)]
-        entities = [self.entity(c) for c in comps]
-        poss = np.array([e.position.pos for e in entities])
-        courages = np.array([c.courage for c in comps])
-        
-        for c in comps:
-            if not c.shout:
+    def shout(self):
+
+        def _fn(c, _dt):
+            c.repulsion = None
+            c.attraction = c.orig_attraction
+
+        for c in self.components:
+            if c is None or not c.shout:
                 continue
+            if not c.repulsion:
+                c.repulsion = 0
+                c.orig_attraction = c.attraction
+                c.attraction = 0
             
-            e2 = self.entity(c)
-
-            vecs = poss - e2.position.pos
-            dist2s = np.sum(vecs**2, axis=1)
-
-            courages = np.where(dist2s < defs.shout_range**2, courages/2, courages)
-
-            for c2, courage in zip(comps, courages):
-                c2.courage = courage
+            c.repulsion += 2000
 
 
     def update(self, _dt):  # pylint: disable=too-many-locals
@@ -184,7 +184,11 @@ class Fear(GameSystem):
             if c2.repulsion:
                 vels += (vecs.T * c2.repulsion / dist2s / courages).T
 
-        dvels = (vels.T / np.linalg.norm(vels, axis=1)).T * defs.rat_speed
+        norms = np.linalg.norm(vels, axis=1)
+        Logger.debug("norms=%s", norms)
+        dvels = np.where(norms > defs.force_threshold, 
+                        vels.T / np.linalg.norm(vels, axis=1) * defs.rat_speed, 
+                        0).T
         _angles = np.arctan2(dvels[:, 1], dvels[:, 0]) + pi / 2
 
         for c, e, (velx, vely), _angle in zip(comps, entities, dvels, _angles):
@@ -194,17 +198,38 @@ class Fear(GameSystem):
             e.rotate.r = _angle
 
         self.update_courages()
+        # self.update_shouts()
 
     def update_courages(self):
         for c in self.components:
             if c is None:
                 continue
+            if c.nomove:
+                continue
             # courage things
+            e = self.entity(c)
             if c.rat_contact:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
+                e.renderer.texture_key = 'rat-red'
                 # Logger.debug("CONTACT: increase courage to %s", c.courage)
             else:
                 c.courage *= 0.998
+                e.renderer.texture_key = 'rat'
+
+    def update_shouts(self):
+        for c in self.components:
+            if c is None or not c.shout:
+                continue
+            #Logger.debug("attraction=%s repulsion=%s", c.attraction, c.repulsion)
+            if c.repulsion is None:
+                continue
+
+            c.repulsion *= 0.95
+            
+            if c.repulsion < 1:
+                c.repulsion = None
+                c.attraction = c.orig_attraction
+                c.orig_attraction = None
 
 
 Factory.register('Fear', cls=Fear)
