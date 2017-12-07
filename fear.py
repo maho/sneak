@@ -47,6 +47,8 @@ class Fear(GameSystem):
         if 'shout' not in args:
             args['shout'] = False
 
+        args['orig_data'] = None
+
         super(Fear, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
         comp.courage = 1.0
@@ -141,18 +143,20 @@ class Fear(GameSystem):
     def shout(self):
 
         def _fn(c, _dt):
-            c.repulsion = None
-            c.attraction = c.orig_attraction
+            c.attraction, c.repulsion = c.orig_data
+            c.orig_data = None
 
         for c in self.components:
             if c is None or not c.shout:
                 continue
-            if not c.repulsion:
-                c.repulsion = 0
-                c.orig_attraction = c.attraction
-                c.attraction = 0
-            
-            c.repulsion += 2000
+            if c.orig_data:
+                continue
+
+            c.orig_data = (c.attraction, c.repulsion)
+            c.attraction = 0
+            c.repulsion += defs.shout_repulsion
+
+            Clock.schedule_once(partial(_fn, c), defs.shout_time) 
 
 
     def update(self, _dt):  # pylint: disable=too-many-locals
@@ -182,7 +186,7 @@ class Fear(GameSystem):
                 vels -= (vecs.T * c2.attraction / dist2s * courages).T
 
             if c2.repulsion:
-                vels += (vecs.T * c2.repulsion / dist2s / courages).T
+                vels += (vecs.T * c2.repulsion**2 / dist2s**2 / courages).T
 
         norms = np.linalg.norm(vels, axis=1)
         Logger.debug("norms=%s", norms)
@@ -198,7 +202,6 @@ class Fear(GameSystem):
             e.rotate.r = _angle
 
         self.update_courages()
-        # self.update_shouts()
 
     def update_courages(self):
         for c in self.components:
@@ -215,21 +218,6 @@ class Fear(GameSystem):
             else:
                 c.courage *= 0.998
                 e.renderer.texture_key = 'rat'
-
-    def update_shouts(self):
-        for c in self.components:
-            if c is None or not c.shout:
-                continue
-            #Logger.debug("attraction=%s repulsion=%s", c.attraction, c.repulsion)
-            if c.repulsion is None:
-                continue
-
-            c.repulsion *= 0.95
-            
-            if c.repulsion < 1:
-                c.repulsion = None
-                c.attraction = c.orig_attraction
-                c.orig_attraction = None
 
 
 Factory.register('Fear', cls=Fear)

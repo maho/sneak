@@ -177,7 +177,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            'friction': 1.0
                                                         }]},
                                   'fear': {'attraction': 1000, 
-                                           'repulsion': 1500,
+                                           'repulsion': 2500,
                                            'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
                              },

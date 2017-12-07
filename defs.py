@@ -19,14 +19,15 @@ numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
 max_lives = 6
-shout_range = 300
+shout_time = 0.8
 
 # physics
 coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
-force_threshold = 3
+force_threshold = 4.5
+shout_repulsion = 15000
 
 # steering
 steering_min_dist = 50
