@@ -7,6 +7,7 @@ from kivy.factory import Factory
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
+#from plyer import gyroscope
 
 import defs
 
@@ -20,6 +21,12 @@ class SneakSteeringSystem(GameSystem):
         self.keys_pressed = set()
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
+
+        self.has_gyro = True
+        # try:
+        #   gyroscope.enable()
+        # except plyer.NotImplementedError:
+        #    self.has_gyro = False
 
     def init_component(self, cindex, eid, zone, args):
         super(SneakSteeringSystem, self).init_component(cindex, eid, zone, args)
@@ -56,6 +63,10 @@ class SneakSteeringSystem(GameSystem):
 
 
     def update(self, _dt):
+        
+        # if self.has_gyro:
+        #    Logger.debug("gyro = %s", gyroscope.orientation)
+
         for comp in self.components:
             if comp is None:
                 continue

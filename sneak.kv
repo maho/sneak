@@ -103,7 +103,7 @@ SneakGame:
                     Button:
                         font_size: 20
                         text: "Play Again"
-                        on_press: root.game.on_play()
+                        on_press: root.game.advance_level(reset=True)
                         size_hint: 1.0, 0.3
                     Widget:
                 Widget:
