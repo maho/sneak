@@ -1,12 +1,14 @@
 # pylint: disable=no-member,unused-variable,unused-import
 from functools import partial
-from math import pi
+from math import pi, degrees
+from random import randint
 
 from kivy.base import EventLoop
 from kivy.clock import Clock
 from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
+from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
 import numpy as np
 
@@ -108,10 +110,6 @@ class Fear(GameSystem):
         c1.rat_contact += 1
         c2.rat_contact += 1
 
-        Logger.debug("COL:%s vs %s, states=%s", c1.entity_id, c2.entity_id,
-                [int(x.rat_contact) for x in self.components if x and not x.nomove]
-                )
-
         return True
 
     def rat_vs_rat_end(self, _space, arbiter):
@@ -119,9 +117,7 @@ class Fear(GameSystem):
 
         c1.rat_contact -= 1
         c2.rat_contact -= 1
-        Logger.debug("END:%s vs %s, states=%s", c1.entity_id, c2.entity_id,
-                [int(x.rat_contact) for x in self.components if x and not x.nomove]
-                )
+        
         return True
 
     def rat_vs_stone_begin(self, _space, arbiter):
@@ -189,23 +185,26 @@ class Fear(GameSystem):
                 vels += (vecs.T * c2.repulsion**2 / dist2s**2 / courages).T
 
         norms = np.linalg.norm(vels, axis=1)
-        dvels = np.where(norms > defs.force_threshold, 
-                        vels.T / np.linalg.norm(vels, axis=1) * defs.rat_speed, 
-                        0).T
-        _angles = np.arctan2(dvels[:, 1], dvels[:, 0]) + pi / 2
+        angles = np.arctan2(vels[:, 1], vels[:, 0]) + pi / 2
+        runornots = norms > defs.force_threshold
 
-        for c, e, (velx, vely), _angle in zip(comps, entities, dvels, _angles):
+        for c, e, angle, runornot in zip(comps, entities, angles, runornots):
             if c.nomove:
                 continue
-            e.cymunk_physics.body.velocity = (velx, vely)
-            if velx and vely:
-                anglediff = (_angle - e.rotate.r + 3*pi) % (2*pi) - pi
-                Logger.debug("anglediff=%0.1f _angle=%0.1f e.rotate.r=%0.1f", anglediff*180/pi, _angle*180/pi, e.rotate.r*180/pi)
-                if anglediff > 0:
-                    e.rotate.r -= defs.rat_turn_angle
-                else:
-                    e.rotate.r += defs.rat_turn_angle
-                Logger.debug("\t\te.rotate.r=%0.1f", e.rotate.r*180/pi)
+            
+            if not runornot:
+                continue
+
+            body = e.cymunk_physics.body
+
+            anglediff = (angle - e.rotate.r + 3*pi) % (2*pi) - pi
+            if anglediff > 0:
+                body.angle -= defs.rat_turn_angle
+            else:
+                body.angle += defs.rat_turn_angle
+
+            new_speed = randint(*defs.rat_speed)
+            body.velocity = Vector((0, new_speed)).rotate(degrees(body.angle))
 
         self.update_courages()
 
@@ -220,7 +219,6 @@ class Fear(GameSystem):
             if c.rat_contact:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
                 e.renderer.texture_key = 'rat-red'
-                # Logger.debug("CONTACT: increase courage to %s", c.courage)
             else:
                 c.courage *= 0.998
                 e.renderer.texture_key = 'rat'
