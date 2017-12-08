@@ -189,7 +189,6 @@ class Fear(GameSystem):
                 vels += (vecs.T * c2.repulsion**2 / dist2s**2 / courages).T
 
         norms = np.linalg.norm(vels, axis=1)
-        Logger.debug("norms=%s", norms)
         dvels = np.where(norms > defs.force_threshold, 
                         vels.T / np.linalg.norm(vels, axis=1) * defs.rat_speed, 
                         0).T
@@ -199,7 +198,14 @@ class Fear(GameSystem):
             if c.nomove:
                 continue
             e.cymunk_physics.body.velocity = (velx, vely)
-            e.rotate.r = _angle
+            if velx and vely:
+                anglediff = (_angle - e.rotate.r + 3*pi) % (2*pi) - pi
+                Logger.debug("anglediff=%0.1f _angle=%0.1f e.rotate.r=%0.1f", anglediff*180/pi, _angle*180/pi, e.rotate.r*180/pi)
+                if anglediff > 0:
+                    e.rotate.r -= defs.rat_turn_angle
+                else:
+                    e.rotate.r += defs.rat_turn_angle
+                Logger.debug("\t\te.rotate.r=%0.1f", e.rotate.r*180/pi)
 
         self.update_courages()
 

@@ -2,13 +2,13 @@ import math
 
 # level specific data
 map_size = (1000, 1000)
-num_stones = 1
-num_rats = 10
+num_stones = 0
+num_rats = 1
 
 
 # characters
-person_speed = 400
-rat_speed = 120
+person_speed = 100 # 400
+rat_speed = 10 # 120
 max_courage = 4.0
 
 # gameplay things
@@ -26,12 +26,13 @@ coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
-force_threshold = 4.5
+force_threshold = 1.5
 shout_repulsion = 15000
 
 # steering
 steering_min_dist = 50
 angle_step = math.radians(6)
+rat_turn_angle = math.radians(1)
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
