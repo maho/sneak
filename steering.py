@@ -4,10 +4,11 @@ import time
 from kivy.base import EventLoop
 from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
+from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
-#from plyer import gyroscope
+from plyer import accelerometer
 
 import defs
 
@@ -22,11 +23,12 @@ class SneakSteeringSystem(GameSystem):
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
 
-        self.has_gyro = True
-        # try:
-        #   gyroscope.enable()
-        # except plyer.NotImplementedError:
-        #    self.has_gyro = False
+        self.has_accel = True
+        self.accel_base = None
+        try:
+            accelerometer.enable()
+        except plyer.NotImplementedError:
+            self.has_accel = False
 
     def init_component(self, cindex, eid, zone, args):
         super(SneakSteeringSystem, self).init_component(cindex, eid, zone, args)
@@ -43,6 +45,7 @@ class SneakSteeringSystem(GameSystem):
         self.keys_pressed.add(code)
 
     def on_touch_up(self, __touch):
+        Logger.debug("on_touch_up, touch=%s", __touch)
         self.touch = None
 
     def on_touch_down(self, touch):
@@ -58,14 +61,35 @@ class SneakSteeringSystem(GameSystem):
         else:
             v = Vector((0, defs.person_speed)).rotate(degrees(entity.cymunk_physics.body.angle))
 
+        Logger.debug("new_velocity = %0.2f, %0.2f", v.x, v.y)
+
         entity.cymunk_physics.body.velocity = v
-        #entity.cymunk_physics.body.apply_impulse(v)
+
+    def update_accel_base(self):
+        if not self.has_accel:
+            return
+        if not self.accel_base:
+            x, y, z = accelerometer.acceleration[:3]
+            if None in [x, y, z]:
+                return
+            self.accel_base = x, y, z
 
 
     def update(self, _dt):
-        
-        # if self.has_gyro:
-        #    Logger.debug("gyro = %s", gyroscope.orientation)
+
+        self.update_accel_base()
+       
+        accel_vec = None
+        if self.has_accel and self.accel_base:
+            
+            x, y, z = accelerometer.acceleration[:3]
+            bx, by, bz = self.accel_base
+            x -= bx
+            y -= by
+            z -= bz
+
+            accel_vec = (y, -x)
+
 
         for comp in self.components:
             if comp is None:
@@ -81,7 +105,11 @@ class SneakSteeringSystem(GameSystem):
             if 'up' in self.keys_pressed:
                 self.apply_run(comp, e)
 
-            if self.touch:
+            if accel_vec:
+                vec = Vector(accel_vec)
+                Logger.debug("accel_vec = %0.2f, %0.2f", vec.x, vec.y)
+                self.apply_run(comp, e, vec)
+            elif self.touch:
                 p = e.position.pos
                 tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
                 vec = Vector(tpos) - p

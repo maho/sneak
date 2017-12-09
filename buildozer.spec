@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, doc, img
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.4
+version = 0.5
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -36,7 +36,7 @@ version = 0.4
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy
+requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,plyer
 
 # android.ndk_path = /home/maho/ndk/crystax-ndk-10.3.2
 # requirements = python3crystax,hostpython3crystax,kivy,kivent_core
@@ -90,7 +90,7 @@ fullscreen = 1
 #android.presplash_color = #FFFFFF
 
 # (list) Permissions
-#android.permissions = INTERNET
+# android.permissions = INTERNET
 
 # (int) Android API to use
 #android.api = 19
@@ -182,7 +182,7 @@ fullscreen = 1
 #android.library_references =
 
 # (str) Android logcat filters to use
-#android.logcat_filters = *:S python:D
+android.logcat_filters = *:S python:D
 
 # (bool) Copy library instead of making a libpymodules.so
 #android.copy_libs = 1

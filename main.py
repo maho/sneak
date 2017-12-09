@@ -1,21 +1,25 @@
 # pylint: disable=attribute-defined-outside-init, wrong-import-position
 # import cProfile
+import logging
 import os
 from random import randint
 import time
 
 
+from kivy.config import Config
+Config.set('kivy', 'log_level', 'debug')
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.logger import Logger
+
 from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
 import kivent_cymunk # noqa:
 
 if "DEBUG" in os.environ:
-    from kivy.config import Config
     Config.set('graphics', 'width', '800')
     Config.set('graphics', 'height', '400')
+
 
 # import kivent_core
 from kivent_core.managers.resource_managers import texture_manager  # noqa: E402

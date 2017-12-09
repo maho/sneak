@@ -31,8 +31,9 @@ force_threshold = 1.5
 shout_repulsion = 15000
 
 # steering
-steering_min_dist = 50
+steering_min_dist = 1 # FIXME: remove this setting? 
 angle_step = math.radians(6)
+accel_threshold=0.5
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
