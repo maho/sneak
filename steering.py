@@ -35,8 +35,12 @@ class SneakSteeringSystem(GameSystem):
         if active:
             try:
                 accelerometer.enable()
-                self.accel_base = accelerometer.acceleration
-                Logger.debug("accel base=%s", self.accel_base)
+                while True:
+                    self.accel_base = accelerometer.acceleration
+                    Logger.debug("accel base=%s", self.accel_base)
+                    if self.accel_base and self.accel_base[0] is not None:
+                        break
+                self.has_accel = True
             except plyer.NotImplementedError:
                 self.has_accel = False
                 cbox.active = False
