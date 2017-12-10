@@ -9,6 +9,7 @@ SneakGame:
     fear: fear
     lives: self.lives
     points: self.points
+    steering: steering
     levelnum: 0
 
     GameWorld:
@@ -47,9 +48,11 @@ SneakGame:
             do_scroll_lock: False
             gameworld: gameworld
             updateable: True
-            # camera_speed_multiplier: 5
+            camera_speed_multiplier: 1
+            camera_scale: 1.0
 
         SneakSteeringSystem:
+            id: steering
             system_id: 'steering'
             gameworld: gameworld
             game: root
@@ -86,6 +89,7 @@ SneakGame:
 <GameScreenManager>:
 
     game: self.parent
+    steering: self.parent.steering
 
     GameScreen:
         id: main_screen
@@ -119,7 +123,7 @@ SneakGame:
                 Widget:
                 Label:
                     text: "Level %s"%(root.game.levelnum + 1)
-                    font_size: 50
+                    font_size: 30
                 BoxLayout:
                     Widget:
                     Button:
@@ -128,7 +132,13 @@ SneakGame:
                         on_press: root.game.on_play()
                         size_hint: 1.0, 0.3
                     Widget:
-                Widget:
+                BoxLayout:
+                    CheckBox:
+                        id: use_accel
+                        on_active: root.steering.set_accelerometer(self)
+                    Label:
+                        text: "use accelerometer"
+
             Widget:
 
     GameScreen:
@@ -168,5 +178,5 @@ SneakGame:
 
 <Label>:
     font_name: "assets/fonts/alpha_echo.ttf"
-    font_size: 40
+    font_size: 20
 

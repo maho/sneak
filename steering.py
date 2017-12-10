@@ -23,16 +23,30 @@ class SneakSteeringSystem(GameSystem):
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
 
-        self.has_accel = True
+        self.has_accel = False
         self.accel_base = None
-        try:
-            accelerometer.enable()
-        except plyer.NotImplementedError:
-            self.has_accel = False
 
     def init_component(self, cindex, eid, zone, args):
         super(SneakSteeringSystem, self).init_component(cindex, eid, zone, args)
         comp = self.components[cindex]
+
+    def set_accelerometer(self, cbox):
+        active = cbox.active
+        if active:
+            try:
+                accelerometer.enable()
+                self.accel_base = accelerometer.acceleration
+                Logger.debug("accel base=%s", self.accel_base)
+            except plyer.NotImplementedError:
+                self.has_accel = False
+                cbox.active = False
+        else:
+            try:
+                accelerometer.disable()
+            except:
+                pass
+            self.has_accel = False
+
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -45,7 +59,6 @@ class SneakSteeringSystem(GameSystem):
         self.keys_pressed.add(code)
 
     def on_touch_up(self, __touch):
-        Logger.debug("on_touch_up, touch=%s", __touch)
         self.touch = None
 
     def on_touch_down(self, touch):
@@ -60,8 +73,6 @@ class SneakSteeringSystem(GameSystem):
             entity.cymunk_physics.body.angle = radians(vector.angle((0, 1)))
         else:
             v = Vector((0, defs.person_speed)).rotate(degrees(entity.cymunk_physics.body.angle))
-
-        Logger.debug("new_velocity = %0.2f, %0.2f", v.x, v.y)
 
         entity.cymunk_physics.body.velocity = v
 
