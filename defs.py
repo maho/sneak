@@ -2,8 +2,8 @@ import math
 
 # level specific data
 map_size = (1000, 1000)
-num_stones = 2
-num_rats = 4
+num_stones = 1
+num_rats = 2
 
 
 # characters
@@ -15,7 +15,7 @@ max_courage = 4.0
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 10, 1.1  # on advance level, add, multipiler
+numrats_change = 3, 1.1  # on advance level, add, multipiler
 numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2

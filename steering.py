@@ -68,11 +68,15 @@ class SneakSteeringSystem(GameSystem):
     def update_accel_base(self):
         if not self.has_accel:
             return
-        if not self.accel_base:
-            x, y, z = accelerometer.acceleration[:3]
-            if None in [x, y, z]:
-                return
-            self.accel_base = x, y, z
+        try:
+            if not self.accel_base:
+                x, y, z = accelerometer.acceleration[:3]
+                if None in [x, y, z]:
+                    return
+                self.accel_base = x, y, z
+        except Exception:
+            Logger.error("no accel avail?")
+            self.has_accel = False
 
 
     def update(self, _dt):
