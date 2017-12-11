@@ -35,7 +35,7 @@ texture_manager.load_atlas('assets/objects.atlas')
 class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     levelnum = NumericProperty(0)
-    arrow_tip = ObjectProperty((400, 400))
+    arrow_tip = ObjectProperty(None, allownone=True)
     arrow_angle = NumericProperty(30)
 
     def __init__(self, **kwargs):
@@ -56,6 +56,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.person_anim = 'walk'
 
         Clock.schedule_interval(self.update, 0.05)
+        Clock.schedule_interval(self.update_arrow, 0.01)
 
     def init_game(self):
         self.setup_states()
@@ -124,8 +125,6 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             ent.animation.current_frame_index = 0
         elif self.person_anim != old_anim:
             ent.animation.animation = self.person_anim
-
-        self.update_arrow()
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
@@ -295,38 +294,40 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         return True
 
-    def update_arrow(self):
+    def update_arrow(self, _dt):
         mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
         cw, ch = self.camera.size
+        cw = float(cw)
+        ch = float(ch)
 
-        lines = [[(0, 0), (0, ch)], 
-                 [(0, ch), (cw, ch)],
-                 [(cw, ch), (cw, 0)],
-                 [(cw, 0), (0, 0)]]
+        #NOTE: lines shouldn't be parallel to OX or OY axis, otherwise segment_intersection will be false-negative
+        lines = [[(50, -100), (51, ch + 100)], 
+                 [(-100, ch - 50), (cw + 100, ch - 51)],
+                 [(cw - 51, ch + 100), (cw - 50, -100)],
+                 [(cw + 100, 51), (- 100, 50)]]
 
         wcx, wcy = self.camera.get_camera_center()
 
+        arrow_tip = None
+
+        Logger.debug("len(lines) = %s", len(lines))
         for v1, v2 in lines:
             #line of boundary in world coordinates
             wv1 = self.camera.convert_from_screen_to_world(v1)
             wv2 = self.camera.convert_from_screen_to_world(v2)
 
             #line from center camera to center of stones
-            ws1 = (wcx, wcy)
-            ws2 = (mapw/2, maph/2)
+            ws1 = (float(wcx), float(wcy))
+            ws2 = (float(mapw/2), float(maph/2))
 
             #intersection between them
             intersection = Vector.segment_intersection(wv1, wv2, ws1, ws2)
             if intersection:
-                self.arrow_tip = intersection
+                arrow_tip = intersection
                 self.arrow_angle = (Vector(ws2) - (ws1)).angle((0, 100))
-                Logger.debug("set arrow_tip and arrow_angle to %s and %s", self.arrow_tip, self.arrow_angle)
-                return
+                break
 
-
-
-
-
+        self.arrow_tip = arrow_tip
 
 
 class SneakApp(App):

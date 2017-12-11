@@ -13,7 +13,7 @@ SneakGame:
     levelnum: 0
     stones_in_game: self.stones_in_game
             
-    arrow_tip: [100, 500]
+    arrow_tip: self.arrow_tip
     arrow_angle: 45
 
     GameWorld:
@@ -52,21 +52,20 @@ SneakGame:
             do_scroll_lock: False
             gameworld: gameworld
             updateable: True
-            camera_speed_multiplier: 1
+            camera_speed_multiplier: 5
             camera_scale: 1.0
-        
             
             canvas:
                 PushMatrix
                 Rotate:
                     angle: root.arrow_angle
-                    origin: root.arrow_tip
+                    origin: root.arrow_tip if root.arrow_tip else (0, 0)
                 Color:
                     rgba: 1, 0, 0, 1
 
                 Line:
                     width: 10
-                    points: [root.arrow_tip[0] - 20, root.arrow_tip[1] - 50, root.arrow_tip[0], root.arrow_tip[1], root.arrow_tip[0] + 20, root.arrow_tip[1] - 50]
+                    points: [root.arrow_tip[0] - 20, root.arrow_tip[1] - 50, root.arrow_tip[0], root.arrow_tip[1], root.arrow_tip[0] + 20, root.arrow_tip[1] - 50] if root.arrow_tip else []
                 PopMatrix
 
 
