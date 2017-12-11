@@ -2,8 +2,8 @@ import math
 
 # level specific data
 map_size = (1000, 1000)
-num_stones = 1
-num_rats = 2
+num_stones = 5
+num_rats = 20
 
 
 # characters
@@ -11,6 +11,7 @@ person_speed = 400
 rat_speed =  (80, 160)
 rat_turn_angle = math.radians(4)
 max_courage = 4.0
+min_contact_to_get_courage = 2
 
 # gameplay things
 freeze_time = 3

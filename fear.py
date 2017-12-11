@@ -56,6 +56,7 @@ class Fear(GameSystem):
         comp.courage = 1.0
         comp.stone_contact = False
         comp.rat_contact = 0
+        comp.rat_speed = randint(*defs.rat_speed) # used only for rats
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -203,8 +204,7 @@ class Fear(GameSystem):
             else:
                 body.angle += defs.rat_turn_angle
 
-            new_speed = randint(*defs.rat_speed)
-            body.velocity = Vector((0, new_speed)).rotate(degrees(body.angle))
+            body.velocity = Vector((0, c.rat_speed)).rotate(degrees(body.angle))
 
         self.update_courages()
 
@@ -216,7 +216,7 @@ class Fear(GameSystem):
                 continue
             # courage things
             e = self.entity(c)
-            if c.rat_contact:
+            if c.rat_contact >= defs.min_contact_to_get_courage:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
                 e.renderer.texture_key = 'rat-red'
             else:

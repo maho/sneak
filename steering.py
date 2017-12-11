@@ -41,7 +41,7 @@ class SneakSteeringSystem(GameSystem):
                     if self.accel_base and self.accel_base[0] is not None:
                         break
                 self.has_accel = True
-            except plyer.NotImplementedError:
+            except:
                 self.has_accel = False
                 cbox.active = False
         else:

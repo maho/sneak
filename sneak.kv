@@ -11,6 +11,7 @@ SneakGame:
     points: self.points
     steering: steering
     levelnum: 0
+    stones_in_game: self.stones_in_game
 
     GameWorld:
         id: gameworld
@@ -153,11 +154,15 @@ SneakGame:
 
                 Label:
                     text: "Points: %s"%root.game.points
+                Label:
+                    text: "Stones left: %s"%root.game.stones_in_game
 
                 Widget:
 
                 Label:
                     text: "Lives: %s"%root.game.lives
+                Label:
+                    text: "Level: %s"%root.game.levelnum
 
             Widget:
                 size_hint: 1.0, 0.9
