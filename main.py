@@ -310,7 +310,6 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         arrow_tip = None
 
-        Logger.debug("len(lines) = %s", len(lines))
         for v1, v2 in lines:
             #line of boundary in world coordinates
             wv1 = self.camera.convert_from_screen_to_world(v1)
