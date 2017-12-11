@@ -11,8 +11,8 @@ Config.set('kivy', 'log_level', 'debug')
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.logger import Logger
-
-from kivy.properties import NumericProperty
+from kivy.vector import Vector
+from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.widget import Widget
 import kivent_cymunk # noqa:
 
@@ -35,6 +35,8 @@ texture_manager.load_atlas('assets/objects.atlas')
 class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     levelnum = NumericProperty(0)
+    arrow_tip = ObjectProperty((400, 400))
+    arrow_angle = NumericProperty(30)
 
     def __init__(self, **kwargs):
         super(SneakGame, self).__init__(**kwargs)
@@ -122,6 +124,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             ent.animation.current_frame_index = 0
         elif self.person_anim != old_anim:
             ent.animation.animation = self.person_anim
+
+        self.update_arrow()
 
     def setup_states(self):
         self.gameworld.add_state(state_name='main',
@@ -290,6 +294,39 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.advance_level()
 
         return True
+
+    def update_arrow(self):
+        mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
+        cw, ch = self.camera.size
+
+        lines = [[(0, 0), (0, ch)], 
+                 [(0, ch), (cw, ch)],
+                 [(cw, ch), (cw, 0)],
+                 [(cw, 0), (0, 0)]]
+
+        wcx, wcy = self.camera.get_camera_center()
+
+        for v1, v2 in lines:
+            #line of boundary in world coordinates
+            wv1 = self.camera.convert_from_screen_to_world(v1)
+            wv2 = self.camera.convert_from_screen_to_world(v2)
+
+            #line from center camera to center of stones
+            ws1 = (wcx, wcy)
+            ws2 = (mapw/2, maph/2)
+
+            #intersection between them
+            intersection = Vector.segment_intersection(wv1, wv2, ws1, ws2)
+            if intersection:
+                self.arrow_tip = intersection
+                self.arrow_angle = (Vector(ws2) - (ws1)).angle((0, 100))
+                Logger.debug("set arrow_tip and arrow_angle to %s and %s", self.arrow_tip, self.arrow_angle)
+                return
+
+
+
+
+
 
 
 class SneakApp(App):

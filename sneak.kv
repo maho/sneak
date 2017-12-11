@@ -12,6 +12,9 @@ SneakGame:
     steering: steering
     levelnum: 0
     stones_in_game: self.stones_in_game
+            
+    arrow_tip: [100, 500]
+    arrow_angle: 45
 
     GameWorld:
         id: gameworld
@@ -51,6 +54,21 @@ SneakGame:
             updateable: True
             camera_speed_multiplier: 1
             camera_scale: 1.0
+        
+            
+            canvas:
+                PushMatrix
+                Rotate:
+                    angle: root.arrow_angle
+                    origin: root.arrow_tip
+                Color:
+                    rgba: 1, 0, 0, 1
+
+                Line:
+                    width: 10
+                    points: [root.arrow_tip[0] - 20, root.arrow_tip[1] - 50, root.arrow_tip[0], root.arrow_tip[1], root.arrow_tip[0] + 20, root.arrow_tip[1] - 50]
+                PopMatrix
+
 
         SneakSteeringSystem:
             id: steering
@@ -143,8 +161,9 @@ SneakGame:
             Widget:
 
     GameScreen:
-        id: gameover_screen
+        id: main_screen
         name: 'main'
+        
         BoxLayout:
             orientation: 'vertical'
 
