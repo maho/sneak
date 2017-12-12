@@ -66,15 +66,20 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     def load_models(self):
         self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
         self.load_animation('grace', 50, 50, "person-grace-%02d", 6)
+        self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0})
+        self.load_animation('rat-red', 19, 25, "rat-red-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0})
 
-    def load_animation(self, animname, w, h, pattern, nframes):
+
+    def load_animation(self, animname, w, h, pattern, nframes, framemap=None):
+        if not framemap:
+            framemap = {x:x for x in range(nframes)}
         mm = self.gameworld.model_manager
         for x in range(nframes):
-            mm.load_textured_rectangle('vertex_format_4f', w, h, pattern % x, pattern % x)
+            mm.load_textured_rectangle('vertex_format_4f', w, h, pattern % framemap[x], pattern % x)
 
         am = self.gameworld.animation_manager
 
-        animation_frames = [{'texture': pattern % x,
+        animation_frames = [{'texture': pattern % framemap[x],
                              'model': pattern % x,
                              'duration': 50} for x in range(nframes)]
         am.load_animation(animname, nframes, animation_frames)
@@ -227,7 +232,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         for _x in range(self.num_rats):
             self.gameworld.init_entity(
                         *defedict({
-                            'renderer': {'texture': 'rat',
+                            'renderer': {'texture': 'rat-0',
                                          'size': (20, 20),
                                          'copy': True},
                             'fear': {},
@@ -243,8 +248,9 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        },
                                                        'friction': 1.0
                                                     }]},
+                            'animation': {'name': 'rat', 'loop': 'True'},
                             'position': (randint(0, mapw), randint(0, maph))},
-                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
+                            ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics', 'animation'])
                            )
 
     def init_callbacks(self):

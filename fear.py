@@ -218,10 +218,10 @@ class Fear(GameSystem):
             e = self.entity(c)
             if c.rat_contact >= defs.min_contact_to_get_courage:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
-                e.renderer.texture_key = 'rat-red'
+                # e.animation.name = 'rat-red'
             else:
                 c.courage *= 0.998
-                e.renderer.texture_key = 'rat'
+                # e.renderer.texture_key = 'rat'
 
 
 Factory.register('Fear', cls=Fear)
