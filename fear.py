@@ -194,6 +194,7 @@ class Fear(GameSystem):
                 continue
             
             if not runornot:
+                e.animation.current_frame_index = 0
                 continue
 
             body = e.cymunk_physics.body

@@ -34,7 +34,7 @@ shout_time = 2.8
 # steering
 steering_min_dist = 0.4 # FIXME: remove this setting? 
 angle_step = math.radians(4)
-shout_accel = 13
+shout_accel = 11
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
