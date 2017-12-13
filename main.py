@@ -160,8 +160,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     def draw_some_stuff(self):
         # draw person
         self.gameworld.clear_entities()
-        self.draw_stones()
         self.draw_rats()
+        self.draw_stones()
         self.draw_person()
         self.init_callbacks()
 

@@ -21,7 +21,6 @@ numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
 max_lives = 6
-shout_time = 1.8
 
 # physics
 coltype_person = 1
@@ -29,11 +28,13 @@ coltype_rat = 2
 coltype_stone = 3
 
 force_threshold = 1.5
-shout_repulsion = 15000
+shout_repulsion = 20000
+shout_time = 2.8
 
 # steering
-steering_min_dist = 0.3 # FIXME: remove this setting? 
+steering_min_dist = 0.4 # FIXME: remove this setting? 
 angle_step = math.radians(4)
+shout_accel = 13
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion

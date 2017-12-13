@@ -107,7 +107,11 @@ class SneakSteeringSystem(GameSystem):
             y -= by
             z -= bz
 
-            accel_vec = (y, -x)
+            if abs(x) > defs.shout_accel or abs(y) > defs.shout_accel or abs(z) > defs.shout_accel:
+                Logger.debug("ACCEL SHOUT x,y,z=%s", (x, y, z))
+                self.fear.shout()
+            else:
+                accel_vec = (y, -x)
 
 
         for comp in self.components:
