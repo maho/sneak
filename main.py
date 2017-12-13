@@ -66,11 +66,10 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     def load_models(self):
         self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
         self.load_animation('grace', 50, 50, "person-grace-%02d", 6)
-        self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0})
-        self.load_animation('rat-red', 19, 25, "rat-red-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0})
+        self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0}, frame_duration=31)
 
 
-    def load_animation(self, animname, w, h, pattern, nframes, framemap=None):
+    def load_animation(self, animname, w, h, pattern, nframes, framemap=None, frame_duration=50):
         if not framemap:
             framemap = {x:x for x in range(nframes)}
         mm = self.gameworld.model_manager
@@ -81,7 +80,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         animation_frames = [{'texture': pattern % framemap[x],
                              'model': pattern % x,
-                             'duration': 50} for x in range(nframes)]
+                             'duration': frame_duration} for x in range(nframes)]
         am.load_animation(animname, nframes, animation_frames)
 
     def advance_level(self, reset=False):
