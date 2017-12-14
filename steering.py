@@ -8,7 +8,7 @@ from kivy.logger import Logger
 from kivy.properties import NumericProperty
 from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
-from plyer import accelerometer
+from plyer import spatialorientation
 
 import defs
 
@@ -26,28 +26,25 @@ class SneakSteeringSystem(GameSystem):
         self.has_accel = False
         self.accel_base = None
 
-    def init_component(self, cindex, eid, zone, args):
-        super(SneakSteeringSystem, self).init_component(cindex, eid, zone, args)
-        comp = self.components[cindex]
-
     def set_accelerometer(self, cbox):
         active = cbox.active
         if active:
             try:
-                accelerometer.enable()
-                while True:
-                    self.accel_base = accelerometer.acceleration
-                    Logger.debug("accel base=%s", self.accel_base)
-                    if self.accel_base and self.accel_base[0] is not None:
-                        break
+                spatialorientation.enable_listener()
+                # while True:
+                #     self.accel_base = spatialorientation.acceleration
+                #     Logger.debug("accel base=%s", self.accel_base)
+                #     if self.accel_base and self.accel_base[0] is not None:
+                #         break
                 self.has_accel = True
-            except:
+            except Exception, e:
+                Logger.error("spatial not available? %s", e)
                 self.has_accel = False
                 cbox.active = False
         else:
             try:
-                accelerometer.disable()
-            except:
+                spatialorientation.disable_listener()
+            except Exception:
                 pass
             self.has_accel = False
 
@@ -80,38 +77,14 @@ class SneakSteeringSystem(GameSystem):
 
         entity.cymunk_physics.body.velocity = v
 
-    def update_accel_base(self):
-        if not self.has_accel:
-            return
-        try:
-            if not self.accel_base:
-                x, y, z = accelerometer.acceleration[:3]
-                if None in [x, y, z]:
-                    return
-                self.accel_base = x, y, z
-        except Exception:
-            Logger.error("no accel avail?")
-            self.has_accel = False
-
-
     def update(self, _dt):
-
-        self.update_accel_base()
-       
         accel_vec = None
-        if self.has_accel and self.accel_base:
+        if self.has_accel:
             
-            x, y, z = accelerometer.acceleration[:3]
-            bx, by, bz = self.accel_base
-            x -= bx
-            y -= by
-            z -= bz
+            azimuth, pitch, roll = spatialorientation.orientation
 
-            if abs(x) > defs.shout_accel or abs(y) > defs.shout_accel or abs(z) > defs.shout_accel:
-                Logger.debug("ACCEL SHOUT x,y,z=%s", (x, y, z))
-                self.fear.shout()
-            else:
-                accel_vec = (y, -x)
+            Logger.debug("az, pitch, roll = %s, %s, %s", azimuth, pitch, roll)
+            accel_vec = (pitch, roll)
 
 
         for comp in self.components:

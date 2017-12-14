@@ -36,7 +36,7 @@ version = 0.10
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,plyer
+requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,git+https://github.com/kivy/plyer
 
 # android.ndk_path = /home/maho/ndk/crystax-ndk-10.3.2
 # requirements = python3crystax,hostpython3crystax,kivy,kivent_core
