@@ -3,20 +3,20 @@ import math
 # level specific data
 map_size = (1000, 1000)
 num_stones = 5
-num_rats = 0
+num_rats = 3
 
 
 # characters
-person_speed = 350
-rat_speed = (80, 140)
-rat_turn_angle = math.radians(4)
+person_speed = 360
+rat_speed = (90, 140)
+rat_turn_angle = math.radians(2)
 max_courage = 4.0
-min_contact_to_get_courage = 2
+min_contact_to_get_courage = 3
 
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 3, 1.1  # on advance level, add, multipiler
+numrats_change = 5, 1.15  # on advance level, add, multipiler
 numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
@@ -32,9 +32,8 @@ shout_repulsion = 20000
 shout_time = 2.8
 
 # steering
-steering_min_dist = 0.4 # FIXME: remove this setting? 
-angle_step = math.radians(4)
-shout_accel = 11
+angle_step = math.radians(7)
+full_speed_accel = math.pi / 16
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion

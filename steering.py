@@ -1,3 +1,4 @@
+# pylint: disable=protected-access
 from math import radians, degrees
 
 from kivy.base import EventLoop
@@ -36,14 +37,14 @@ class SneakSteeringSystem(GameSystem):
                     if x and y and z:
                         break
                 self.has_accel = True
-            except Exception, e:
+            except Exception, e:  # pylint: disable=broad-except
                 Logger.error("spatial not available? %s", e)
                 self.has_accel = False
                 cbox.active = False
         else:
             try:
                 spatialorientation.disable_listener()
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
             self.has_accel = False
 
@@ -63,12 +64,12 @@ class SneakSteeringSystem(GameSystem):
     def on_touch_down(self, touch):
         self.touch = touch
 
-    def apply_run(self, entity, vector=None):
-        #if vector and vector.length2() < defs.steering_min_dist ** 2:
-        #    return
-
+    def apply_run(self, entity, vector=None, full_speed_len=None):  # pylint: disable=no-self-use
         if vector:
-            v = vector.normalize() * defs.person_speed
+            vlen = vector.length()
+            speed = min(vlen / full_speed_len * defs.person_speed, defs.person_speed)
+            Logger.debug("vlen = %s, speed = %s", vlen, speed)
+            v = vector.normalize() * speed
             entity.cymunk_physics.body.angle = radians(vector.angle((0, 1)))
         else:
             v = Vector((0, defs.person_speed)).rotate(degrees(entity.cymunk_physics.body.angle))
@@ -78,9 +79,8 @@ class SneakSteeringSystem(GameSystem):
     def update(self, _dt):
         accel_vec = None
         if self.has_accel:
-            azimuth, pitch, roll = spatialorientation.orientation
-
-            Logger.debug("az, pitch, roll = %0.4f, %0.4f, %0.4f", azimuth, pitch, roll)
+            _azimuth, pitch, roll = spatialorientation.orientation
+            # Logger.debug("az, pitch, roll = %0.4f, %0.4f, %0.4f", azimuth, pitch, roll)
             accel_vec = (-pitch, roll)
 
         for comp in self.components:
@@ -99,8 +99,7 @@ class SneakSteeringSystem(GameSystem):
 
             if accel_vec:
                 vec = Vector(accel_vec)
-                Logger.debug("accel_vec = %0.2f, %0.2f", vec.x, vec.y)
-                self.apply_run(e, vec)
+                self.apply_run(e, vec, full_speed_len=defs.full_speed_accel)
             elif self.touch:
                 p = e.position.pos
                 tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
