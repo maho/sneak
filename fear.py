@@ -126,7 +126,7 @@ class Fear(GameSystem):
 
         crat.stone_contact = True
 
-        return False
+        return True
 
     def rat_vs_stone_end(self, _space, arbiter):
         crat, _ign = self.arbiter2components(arbiter, 2, 3)

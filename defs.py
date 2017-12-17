@@ -9,7 +9,7 @@ num_rats = 3
 # characters
 person_speed = 360
 rat_speed = (90, 140)
-rat_turn_angle = math.radians(2)
+rat_turn_angle = math.radians(9)
 max_courage = 4.0
 min_contact_to_get_courage = 2
 

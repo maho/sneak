@@ -88,7 +88,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         if reset:
             self.points = 0
-            self.lives = 4
+            self.lives = 3
             self.levelnum = 0
             self.num_rats = defs.num_rats
             self.num_stones = defs.num_stones
@@ -215,7 +215,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        'collision_type': defs.coltype_stone,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 20,
+                                                           'outer_radius': 40,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
