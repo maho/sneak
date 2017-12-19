@@ -37,7 +37,7 @@ class SneakSteeringSystem(GameSystem):
                     if x and y and z:
                         break
                 self.has_accel = True
-            except Exception, e:  # pylint: disable=broad-except
+            except (Exception) as e:  # pylint: disable=broad-except
                 Logger.error("spatial not available? %s", e)
                 self.has_accel = False
                 cbox.active = False
@@ -66,9 +66,12 @@ class SneakSteeringSystem(GameSystem):
 
     def apply_run(self, entity, vector=None, full_speed_len=None):  # pylint: disable=no-self-use
         if vector:
-            vlen = vector.length()
-            speed = min(vlen / full_speed_len * defs.person_speed, defs.person_speed)
-            Logger.debug("vlen = %s, speed = %s", vlen, speed)
+            if full_speed_len:
+                vlen = vector.length()
+                speed = min(vlen / full_speed_len * defs.person_speed, defs.person_speed)
+                Logger.debug("vlen = %s, speed = %s", vlen, speed)
+            else:
+                speed = defs.person_speed
             v = vector.normalize() * speed
             entity.cymunk_physics.body.angle = radians(vector.angle((0, 1)))
         else:

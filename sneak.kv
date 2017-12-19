@@ -83,7 +83,8 @@ SneakGame:
             system_id: 'cymunk_physics'
             gameworld: gameworld
             zones: ['general']
-            damping: 0.1
+            # damping: 0.1
+            damping: 0.2
 
         Fear:
             id: fear
@@ -109,6 +110,7 @@ SneakGame:
 
     game: self.parent
     steering: self.parent.steering
+
 
     GameScreen:
         id: main_screen
@@ -175,8 +177,7 @@ SneakGame:
                 Label:
                     text: "Points: %s"%root.game.points
                 Label:
-                    text: "Stones left: %s"%root.game.stones_in_game
-
+                    text: "Stones left: %s" % root.game.num_stones_left
                 Widget:
 
                 Label:

@@ -1,24 +1,26 @@
 # pylint: disable=attribute-defined-outside-init, wrong-import-position
 # import cProfile
-import logging
+
+print("BEGBODY")
+
 import os
 from random import randint
 import time
 
 
-from kivy.config import Config
-Config.set('kivy', 'log_level', 'debug')
-from kivy.app import App
-from kivy.clock import Clock
-from kivy.logger import Logger
-from kivy.vector import Vector
-from kivy.properties import NumericProperty, ObjectProperty
-from kivy.uix.widget import Widget
+# from kivy.config import Config
+# Config.set('kivy', 'log_level', 'debug')
+# 
+from kivy.app import App  # noqa: E402
+from kivy.clock import Clock  # noqa: E402
+from kivy.vector import Vector  # noqa: E402
+from kivy.properties import NumericProperty, ObjectProperty  # noqa: E402
+from kivy.uix.widget import Widget  # noqa: E402
 import kivent_cymunk # noqa:
 
-if "DEBUG" in os.environ:
-    Config.set('graphics', 'width', '800')
-    Config.set('graphics', 'height', '400')
+# if "DEBUG" in os.environ:
+#     Config.set('graphics', 'width', '800')
+#     Config.set('graphics', 'height', '400')
 
 
 # import kivent_core
@@ -37,6 +39,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     levelnum = NumericProperty(0)
     arrow_tip = ObjectProperty(None, allownone=True)
     arrow_angle = NumericProperty(30)
+    num_stones_left = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super(SneakGame, self).__init__(**kwargs)
@@ -48,7 +51,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.points = None
         self.lives = None
         self.person_eid = None
-        self.stones_in_game = 0
+        self.stones_in_game = set()
 
         self.num_rats = defs.num_rats
         self.num_stones = defs.num_stones
@@ -66,8 +69,9 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     def load_models(self):
         self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
         self.load_animation('grace', 50, 50, "person-grace-%02d", 6)
-        self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3, 4:4, 5:3, 6:2, 7:1, 8:0}, frame_duration=31)
-
+        self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3,  # noqa: E231
+                                                         4:4, 5:3, 6:2, 7:1, 8:0},  # noqa: E231
+                                                         frame_duration=31)
 
     def load_animation(self, animname, w, h, pattern, nframes, framemap=None, frame_duration=50):
         if not framemap:
@@ -97,7 +101,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             stoadd, stomult = defs.numstones_change
             mapadd, mapmult = defs.mapsize_change
 
-            self.num_rats = int(self.num_rats * rmult + radd)
+            self.num_rats = min(int(self.num_rats * rmult + radd), defs.numrats_limit)
             self.num_stones = int(self.num_stones * stomult + stoadd)
             # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
@@ -199,11 +203,11 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         assert self.camera.focus_entity
 
     def draw_stones(self):
+        self.stones_in_game = set()
         mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
         # draw stones
-        self.stones_in_game = self.num_stones
         for _x in range(self.num_stones):
-            self.gameworld.init_entity(
+            seid = self.gameworld.init_entity(
                         *defedict({
                             'renderer': {'texture': 'stone',
                                          'size': (60, 60)},
@@ -224,6 +228,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                             'position': (randint(200, mapw - 200), randint(200, maph - 200))},
                             ['position', 'rotate', 'renderer', 'fear', 'cymunk_physics'])
                            )
+            self.stones_in_game.add(seid)
+        self.num_stones_left = len(self.stones_in_game)
 
     def draw_rats(self):
         mapw, maph = defs.map_size
@@ -288,13 +294,14 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         if spe.collision_type == defs.coltype_stone:
             spe, ssto = ssto, spe
 
-        sto = ssto.body.data
+        esto = ssto.body.data
 
-        Clock.schedule_once(lambda dt: self.gameworld.remove_entity(sto))
+        Clock.schedule_once(lambda dt: self.gameworld.remove_entity(esto))
 
         self.points += 1
-        self.stones_in_game -= 1
-        if self.stones_in_game <= 0:
+        self.stones_in_game.remove(esto)
+        self.num_stones_left = len(self.stones_in_game)
+        if not self.stones_in_game:
             self.advance_level()
 
         return True
@@ -336,24 +343,28 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
 class SneakApp(App):
 
-    def on_start(self):
-        if "PROFILE" in os.environ:
-            self.profile = cProfile.Profile()
-            self.profile.enable()
+    # def on_start(self):
+    #     if "PROFILE" in os.environ:
+    #         self.profile = cProfile.Profile()
+    #         self.profile.enable()
 
-    def on_stop(self):
-        if "PROFILE" in os.environ:
-            self.profile.disable()
-            self.profile.dump_stats('sneak.profile')
+    # def on_stop(self):
+    #     if "PROFILE" in os.environ:
+    #         self.profile.disable()
+    #         self.profile.dump_stats('sneak.profile')
+    pass
 
+print("ENDBODY")
 
 if __name__ == '__main__':
-    if "DEBUG" in os.environ:
-        def debug_signal_handler(__sig, __frame):
-            import pudb
-            pudb.set_trace()
+    print("BEFORE")
+    # if "DEBUG" in os.environ:
+    #     def debug_signal_handler(__sig, __frame):
+    #         import pudb
+    #         pudb.set_trace()
 
-        import signal
-        signal.signal(signal.SIGINT, debug_signal_handler)
+    #     import signal
+    #     signal.signal(signal.SIGINT, debug_signal_handler)
 
     SneakApp().run()
+    print("AFTER")

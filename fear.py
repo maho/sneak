@@ -35,6 +35,8 @@ class Fear(GameSystem):
     def __init__(self, *a, **kwa):
         super(Fear, self).__init__(*a, **kwa)
 
+        self.cummtime = 0.0
+
         EventLoop.window.bind(on_key_up=self.on_key_up)
 
     def init_component(self, cindex, eid, zone, args):
@@ -155,9 +157,13 @@ class Fear(GameSystem):
 
             Clock.schedule_once(partial(_fn, c), defs.shout_time) 
 
+    def update(self, dt):  # pylint: disable=too-many-locals
 
-    def update(self, _dt):  # pylint: disable=too-many-locals
-
+        self.cummtime += dt
+        if self.cummtime < 0:
+            return
+        self.cummtime -= 0.1
+    
         comps = [c for c in self.components if c and self.entity(c)]
 
         N = len(comps)
