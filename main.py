@@ -343,16 +343,18 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
 class SneakApp(App):
 
-    # def on_start(self):
-    #     if "PROFILE" in os.environ:
-    #         self.profile = cProfile.Profile()
-    #         self.profile.enable()
+    def on_start(self):
+        if "PROFILE" in os.environ:
+            import cProfile as profmod
+            self.profile = profmod.Profile()
+            self.profile.enable()
 
-    # def on_stop(self):
-    #     if "PROFILE" in os.environ:
-    #         self.profile.disable()
-    #         self.profile.dump_stats('sneak.profile')
+    def on_stop(self):
+        if "PROFILE" in os.environ:
+            self.profile.disable()
+            self.profile.dump_stats('sneak.profile')
     pass
+
 
 print("ENDBODY")
 

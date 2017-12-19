@@ -3,7 +3,7 @@ import math
 # level specific data
 map_size = (1000, 1000)
 num_stones = 5
-num_rats = 400
+num_rats = 250
 
 
 # characters
@@ -28,7 +28,7 @@ coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
-force_threshold = 1.5
+force_threshold = 10
 shout_repulsion = 20000
 shout_time = 2.8
 

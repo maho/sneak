@@ -1,6 +1,6 @@
 # pylint: disable=no-member,unused-variable,unused-import
 from functools import partial
-from math import pi, degrees
+from math import pi
 from random import randint
 
 from kivy.base import EventLoop
@@ -8,7 +8,6 @@ from kivy.clock import Clock
 from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.logger import Logger  # noqa: F401
-from kivy.vector import Vector
 from kivent_core.systems.gamesystem import GameSystem
 import numpy as np
 
@@ -31,7 +30,7 @@ import defs
 class Fear(GameSystem):
     # static data
     pre_computed_fields = {}
-    
+
     def __init__(self, *a, **kwa):
         super(Fear, self).__init__(*a, **kwa)
 
@@ -58,7 +57,7 @@ class Fear(GameSystem):
         comp.courage = 1.0
         comp.stone_contact = False
         comp.rat_contact = 0
-        comp.rat_speed = randint(*defs.rat_speed) # used only for rats
+        comp.rat_speed = randint(*defs.rat_speed)  # used only for rats
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -67,7 +66,6 @@ class Fear(GameSystem):
             return
 
         self.shout()
-
 
     def on_add_system(self):
         gw = self.gameworld
@@ -120,7 +118,7 @@ class Fear(GameSystem):
 
         c1.rat_contact -= 1
         c2.rat_contact -= 1
-        
+
         return True
 
     def rat_vs_stone_begin(self, _space, arbiter):
@@ -155,15 +153,19 @@ class Fear(GameSystem):
             c.attraction = 0
             c.repulsion += defs.shout_repulsion
 
-            Clock.schedule_once(partial(_fn, c), defs.shout_time) 
+            Clock.schedule_once(partial(_fn, c), defs.shout_time)
+
+    def numpy_rotate_matrixes(self):
+        for r in [-defs.rat_turn_angle, defs.rat_turn_angle]:
+            c, s = np.cos(r), np.sin(r)
+            yield np.array([c, -s, s, c]).reshape(2, 2)
 
     def update(self, dt):  # pylint: disable=too-many-locals
-
         self.cummtime += dt
         if self.cummtime < 0:
             return
         self.cummtime -= 0.1
-    
+
         comps = [c for c in self.components if c and self.entity(c)]
 
         N = len(comps)
@@ -192,26 +194,37 @@ class Fear(GameSystem):
                 vels += (vecs.T * c2.repulsion**2 / dist2s**2 / courages).T
 
         norms = np.linalg.norm(vels, axis=1)
-        angles = np.arctan2(vels[:, 1], vels[:, 0]) + pi / 2
+        desired_angles = np.arctan2(vels[:, 1], vels[:, 0]) + pi / 2
         runornots = norms > defs.force_threshold
+        real_angles = np.array([e.rotate.r for e in entities])
 
-        for c, e, angle, runornot in zip(comps, entities, angles, runornots):
+        anglediffs = (desired_angles - real_angles + 3 * pi) % (2 * pi) - pi
+        rat_speeds = np.where(runornots, np.array([c.rat_speed for c in comps]), 0)
+
+
+        # FIXME: something wrong is here, it should be >, I have some mess with angle arithmetics
+        # but apparently this "wrong" works well, while "right" have strange results (rats turns in wrong direction)
+        real_angles = np.where(anglediffs < 0, real_angles + defs.rat_turn_angle,
+                                                real_angles - defs.rat_turn_angle)
+
+        # real_angles = np.array([1.5*pi] * N)
+
+        final_vels = np.vstack((-np.sin(real_angles), np.cos(real_angles))) * rat_speeds
+
+        for c, e, angle, runornot, (vx, vy) in zip(comps, entities, real_angles, runornots,
+                                                                                final_vels.T):
             if c.nomove:
                 continue
-            
+
             if not runornot:
                 e.animation.current_frame_index = 0
                 continue
 
             body = e.cymunk_physics.body
 
-            anglediff = (angle - e.rotate.r + 3*pi) % (2*pi) - pi
-            if anglediff > 0:
-                body.angle -= defs.rat_turn_angle
-            else:
-                body.angle += defs.rat_turn_angle
+            body.angle = angle
 
-            body.velocity = Vector((0, c.rat_speed)).rotate(degrees(body.angle))
+            body.velocity = (vx, vy)
 
         self.update_courages()
 
@@ -222,7 +235,7 @@ class Fear(GameSystem):
             if c.nomove:
                 continue
             # courage things
-            e = self.entity(c)
+            # e = self.entity(c)
             if c.rat_contact >= defs.min_contact_to_get_courage:
                 c.courage = min(defs.max_courage, c.courage * 1.02)
                 # e.animation.name = 'rat-red'
