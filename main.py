@@ -312,7 +312,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         cw = float(cw)
         ch = float(ch)
 
-        #NOTE: lines shouldn't be parallel to OX or OY axis, otherwise segment_intersection will be false-negative
+        # NOTE: lines shouldn't be parallel to OX or OY axis, otherwise segment_intersection will be false-negative
         lines = [[(50, -100), (51, ch + 100)], 
                  [(-100, ch - 50), (cw + 100, ch - 51)],
                  [(cw - 51, ch + 100), (cw - 50, -100)],
@@ -342,17 +342,17 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
 
 class SneakApp(App):
+    #
+    # def on_start(self):
+    #     if "PROFILE" in os.environ:
+    #         import cProfile as profmod
+    #         self.profile = profmod.Profile()
+    #         self.profile.enable()
 
-    def on_start(self):
-        if "PROFILE" in os.environ:
-            import cProfile as profmod
-            self.profile = profmod.Profile()
-            self.profile.enable()
-
-    def on_stop(self):
-        if "PROFILE" in os.environ:
-            self.profile.disable()
-            self.profile.dump_stats('sneak.profile')
+    # def on_stop(self):
+    #     if "PROFILE" in os.environ:
+    #         self.profile.disable()
+    #         self.profile.dump_stats('sneak.profile')
     pass
 
 

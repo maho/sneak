@@ -3,7 +3,7 @@ import math
 # level specific data
 map_size = (1000, 1000)
 num_stones = 5
-num_rats = 250
+num_rats = 2
 
 
 # characters
@@ -16,8 +16,8 @@ min_contact_to_get_courage = 2
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 5, 1.35  # on advance level, add, multipiler
-numrats_limit = 400
+numrats_change = 5, 2  # on advance level, add, multipiler
+numrats_limit = 250
 numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
@@ -28,7 +28,7 @@ coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
-force_threshold = 10
+force_threshold = 9
 shout_repulsion = 20000
 shout_time = 2.8
 
