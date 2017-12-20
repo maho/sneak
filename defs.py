@@ -1,9 +1,13 @@
 import math
+import os
 
 # level specific data
 map_size = (1000, 1000)
 num_stones = 5
 num_rats = 2
+
+if "DEBUG" in os.environ:
+    num_rats = 10
 
 
 # characters

@@ -63,8 +63,16 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def init_game(self):
         self.setup_states()
+        self.load_sounds()
         self.load_models()
         self.advance_level(reset=True)
+
+    def load_sounds(self):
+        sm = self.gameworld.sound_manager
+        sm.load_sound("rat", "snd/rat.ogg", 20)
+        sm.load_sound("fail", "snd/fail.ogg", 1)
+        sm.load_sound("stone", "snd/stone.ogg", 20)
+        sm.load_sound("shout", "snd/shout.ogg")
 
     def load_models(self):
         self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
@@ -281,6 +289,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             return
 
         self.gameworld.state = 'fail'
+        self.gameworld.sound_manager.play('fail')
 
         def _fn(_dt):
             self.gameworld.state = 'main'
@@ -302,6 +311,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.points += 1
         self.stones_in_game.remove(esto)
         self.num_stones_left = len(self.stones_in_game)
+        self.gameworld.sound_manager.play('stone')
         if not self.stones_in_game:
             self.advance_level()
 

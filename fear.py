@@ -141,6 +141,8 @@ class Fear(GameSystem):
 
     def shout(self):
 
+        self.gameworld.sound_manager.play('shout')
+
         def _fn(c, _dt):
             c.attraction, c.repulsion = c.orig_data
             c.orig_data = None
@@ -163,6 +165,7 @@ class Fear(GameSystem):
             yield np.array([c, -s, s, c]).reshape(2, 2)
 
     def update(self, dt):  # pylint: disable=too-many-locals
+        sm = self.gameworld.sound_manager
         self.cummtime += dt
         if self.cummtime < 0:
             return
@@ -227,6 +230,7 @@ class Fear(GameSystem):
             if c.anim_changed:
                 e.animation.animation = 'rat'
                 c.anim_changed = False
+                sm.play('rat')
 
             body = e.cymunk_physics.body
 
