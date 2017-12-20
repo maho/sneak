@@ -10,14 +10,14 @@ num_rats = 2
 person_speed = 360
 rat_speed = (90, 140)
 rat_turn_angle = math.radians(18)
-max_courage = 4.0
+max_courage = 4.5
 min_contact_to_get_courage = 2
 
 # gameplay things
 freeze_time = 3
 grace_time = 2
-numrats_change = 5, 2  # on advance level, add, multipiler
-numrats_limit = 250
+numrats_change = 3, 1.1  # on advance level, add, multipiler
+numrats_limit = 200
 numstones_change = 1, 1  # on advance level
 mapsize_change = 200, 1  # on advance level
 lives_add = 2
@@ -28,7 +28,8 @@ coltype_person = 1
 coltype_rat = 2
 coltype_stone = 3
 
-force_threshold = 9
+force_threshold = 8
+person_repulsion = 2600
 shout_repulsion = 20000
 shout_time = 2.8
 

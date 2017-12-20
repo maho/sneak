@@ -192,7 +192,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            'friction': 1.0
                                                         }]},
                                   'fear': {'attraction': 1000, 
-                                           'repulsion': 2500,
+                                           'repulsion': defs.person_repulsion,
                                            'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
                              },
@@ -219,7 +219,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        'collision_type': defs.coltype_stone,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 40,
+                                                           'outer_radius': 20,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
