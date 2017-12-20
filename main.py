@@ -71,7 +71,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.load_animation('grace', 50, 50, "person-grace-%02d", 6)
         self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3,  # noqa: E231
                                                          4:4, 5:3, 6:2, 7:1, 8:0},  # noqa: E231
-                                                         frame_duration=31)
+                                                         frame_duration=40)
+        self.load_animation('rat-still', 19, 25, "rat-%s", 1, {0: 2}, frame_duration=1000)
 
     def load_animation(self, animname, w, h, pattern, nframes, framemap=None, frame_duration=50):
         if not framemap:
@@ -144,7 +145,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         self.gameworld.add_state(state_name='fail',
                                  systems_added=[],
-                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics'],
+                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics', 'animation'],
                                  systems_unpaused=[],
                                  screenmanager_screen='main')
 
@@ -185,13 +186,13 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            'collision_type': defs.coltype_person,
                                                            'shape_info': {
                                                                'inner_radius': 0,
-                                                               'outer_radius': 20,
+                                                               'outer_radius': 15,
                                                                'mass': 50,
                                                                'offset': (0, 0)
                                                            },
                                                            'friction': 1.0
                                                         }]},
-                                  'fear': {'attraction': 1000, 
+                                  'fear': {'attraction': defs.person_attraction, 
                                            'repulsion': defs.person_repulsion,
                                            'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
@@ -240,7 +241,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                             'renderer': {'texture': 'rat-0',
                                          'size': (20, 20),
                                          'copy': True},
-                            'fear': {},
+                            'fear': {'is_rat': True},
                             'cymunk_physics': {'col_shapes': [{
                                                        'shape_type': 'circle',
                                                        'elasticity': 0.5,

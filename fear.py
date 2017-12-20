@@ -49,6 +49,7 @@ class Fear(GameSystem):
             args['nomove'] = False
         if 'shout' not in args:
             args['shout'] = False
+        args['is_rat'] = args.get('is_rat', False)
 
         args['orig_data'] = None
 
@@ -58,6 +59,7 @@ class Fear(GameSystem):
         comp.stone_contact = False
         comp.rat_contact = 0
         comp.rat_speed = randint(*defs.rat_speed)  # used only for rats
+        comp.anim_changed = False
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -111,7 +113,7 @@ class Fear(GameSystem):
         c1.rat_contact += 1
         c2.rat_contact += 1
 
-        return True
+        return False
 
     def rat_vs_rat_end(self, _space, arbiter):
         c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
@@ -217,8 +219,14 @@ class Fear(GameSystem):
                 continue
 
             if not runornot:
-                e.animation.current_frame_index = 0
+                if c.is_rat:
+                    e.animation.animation = 'rat-still'
+                    c.anim_changed = True
                 continue
+
+            if c.anim_changed:
+                e.animation.animation = 'rat'
+                c.anim_changed = False
 
             body = e.cymunk_physics.body
 

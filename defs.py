@@ -14,7 +14,7 @@ max_courage = 4.5
 min_contact_to_get_courage = 2
 
 # gameplay things
-freeze_time = 3
+freeze_time = 1
 grace_time = 2
 numrats_change = 3, 1.1  # on advance level, add, multipiler
 numrats_limit = 200
@@ -29,7 +29,8 @@ coltype_rat = 2
 coltype_stone = 3
 
 force_threshold = 8
-person_repulsion = 2600
+person_attraction = 1000
+person_repulsion = 2700
 shout_repulsion = 20000
 shout_time = 2.8
 
