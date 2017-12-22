@@ -13,7 +13,7 @@ package.domain = maho
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,txt,otf,atlas,glsl,ttf
+source.include_exts = py,png,jpg,kv,txt,otf,atlas,glsl,ttf,ogg
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -28,11 +28,11 @@ source.exclude_dirs = tests, bin, doc, img
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.12
+# version = 0.13
 
 # (str) Application versioning (method 2)
-# version.regex = __version__ = ['"](.*)['"]
-# version.filename = %(source.dir)s/main.py
+# version.regex = (.*)
+# version.filename = %(source.dir)s/.version
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy

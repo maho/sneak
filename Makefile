@@ -1,8 +1,27 @@
+BASE_VERSION=0.14
+VERSION=$(BASE_VERSION).$(shell cat .release)
+
+
 atlas: assets/objects.atlas
 
 assets/objects.atlas: $(wildcard img/*.png)
 	python -m kivy.atlas assets/objects 512x512 $(wildcard img/*.png)
 
-build:
+uprel:
+	echo $$(($$(cat .release) + 1)) > .release
+
+build: uprel
 	buildozer --verbose android debug 
+
+export P4A_RELEASE_KEYSTORE=/home/maho/.buildozer/sneak-upload-keystore.jks
+export P4A_RELEASE_KEYALIAS=myalias4
+export P4A_RELEASE_KEYSTORE_PASSWD=$(shell cat .keypass)
+export P4A_RELEASE_KEYALIAS_PASSWD=$(shell cat .keypass)
+
+export APP_VERSION=$(VERSION)
+
+release: uprel
+	buildozer --verbose android release
+	cp -v .buildozer/android/platform/build/dists/sneakk/bin/Sneakk-$(VERSION)-release.apk bin/
+
 
