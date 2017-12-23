@@ -80,11 +80,14 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.load_animation('rat', 19, 25, "rat-%d", 9, {0:0, 1:1, 2:2, 3:3,  # noqa: E231
                                                          4:4, 5:3, 6:2, 7:1, 8:0},  # noqa: E231
                                                          frame_duration=40)
+        self.load_animation('shout', 37, 78, "shout-%d", 9, {0:0, 1:1, 2:2, 3:3,  # noqa: E231
+                                                         4:4, 5:3, 6:2, 7:1, 8:0},  # noqa: E231
+                                                         frame_duration=30)
         self.load_animation('rat-still', 19, 25, "rat-%s", 1, {0: 2}, frame_duration=1000)
 
     def load_animation(self, animname, w, h, pattern, nframes, framemap=None, frame_duration=50):
         if not framemap:
-            framemap = {x:x for x in range(nframes)}
+            framemap = {x: x for x in range(nframes)}
         mm = self.gameworld.model_manager
         for x in range(nframes):
             mm.load_textured_rectangle('vertex_format_4f', w, h, pattern % framemap[x], pattern % x)
@@ -129,16 +132,19 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         ent = self.gameworld.entities[self.person_eid]
 
         old_anim = self.person_anim
-        if self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
+        if ent.fear.repulsion >= defs.shout_repulsion:
+            self.person_anim = 'shout'
+        elif self.gameworld.state == 'fail' or currtime < self.grace_timestamp:
             self.person_anim = 'grace'
         else:
             speed = ent.cymunk_physics.body.speed
-            if  speed > 80:
+            if speed > 80:
                 self.person_anim = 'walk'
             else:
                 self.person_anim = None
 
         if self.person_anim is None:
+            ent.animation.animation = 'walk'
             ent.animation.current_frame_index = 0
         elif self.person_anim != old_anim:
             ent.animation.animation = self.person_anim

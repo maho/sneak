@@ -193,8 +193,14 @@ SneakGame:
 
                 Button:
                     size_hint: 0.1, 1.0
-                    text: "Shout"
                     on_press: root.game.fear.shout()
+
+                    background_color: 1, 1, 1, 0.1
+
+                    Image:
+                        source: "atlas://assets/objects/shout-1"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
 
                 Widget:
                     size_hint: 0.9, 1.0
