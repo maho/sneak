@@ -36,7 +36,8 @@ force_threshold = 8
 person_attraction = 1000
 person_repulsion = 2700
 shout_repulsion = 20000
-shout_time = 2.8
+shout_time = 2.4
+shout_delay = 5
 
 # steering
 angle_step = math.radians(7)

@@ -2,6 +2,7 @@
 from functools import partial
 from math import pi
 from random import randint
+import time
 
 from kivy.base import EventLoop
 from kivy.clock import Clock
@@ -60,6 +61,7 @@ class Fear(GameSystem):
         comp.rat_contact = 0
         comp.rat_speed = randint(*defs.rat_speed)  # used only for rats
         comp.anim_changed = False
+        comp.shout_time = -1
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -141,7 +143,6 @@ class Fear(GameSystem):
 
     def shout(self):
 
-        self.gameworld.sound_manager.play('shout')
 
         def _fn(c, _dt):
             c.attraction, c.repulsion = c.orig_data
@@ -152,10 +153,15 @@ class Fear(GameSystem):
                 continue
             if c.orig_data:
                 continue
+            if time.time() - c.shout_time < defs.shout_delay:
+                continue
+
+            self.gameworld.sound_manager.play('shout')
 
             c.orig_data = (c.attraction, c.repulsion)
             c.attraction = 0
             c.repulsion += defs.shout_repulsion
+            c.shout_time = time.time()
 
             Clock.schedule_once(partial(_fn, c), defs.shout_time)
 
