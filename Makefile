@@ -20,8 +20,17 @@ export P4A_RELEASE_KEYALIAS_PASSWD=$(shell cat .keypass)
 
 export APP_VERSION=$(VERSION)
 
-release: uprel
-	buildozer --verbose android release
-	cp -v .buildozer/android/platform/build/dists/sneakk/bin/Sneakk-$(VERSION)-release.apk bin/
+RELAPKNAME=Sneakk-$(VERSION)-release.apk
+RELAPKPATH=bin/$(RELAPKNAME)
+
+release: $(RELAPKPATH)
+
+$(RELAPKPATH): uprel atlas
+	sudo -u utils/buildozer.sh --verbose android release
+	cp -v .buildozer/android/platform/build/dists/sneakk/bin/$(RELAPKNAME) bin/
+
+upload: $(RELAPKPATH)
+	python utils/basic_upload_apks.py maho.sneakk $(RELAPKPATH)
+
 
 
