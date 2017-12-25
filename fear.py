@@ -28,6 +28,10 @@ import defs
 #     plt.show()
 
 
+def debcom(com):
+    return "[#%s c:%0.2f]"%(com.entity_id, com.courage)
+
+
 class Fear(GameSystem):
     # static data
     pre_computed_fields = {}
@@ -83,17 +87,24 @@ class Fear(GameSystem):
                                      separate_func=self.rat_vs_rat_end)
 
     def entity2component(self, e, static={}):
-        e2c = static
-        try:
-            return e2c[e]
-        except KeyError:
-            # recalc entity to components
-            for c in self.components:
-                if c is None:
-                    continue
-                e2c[c.entity_id] = c
+        # #FIXME: fast, but error - prone. Check if just iterate over isn't fast enough
+        #
+        # e2c = static
+        # try:
+        #     return e2c[e]
+        # except KeyError:
+        #     # recalc entity to components
+        #     for c in self.components:
+        #         if c is None:
+        #             continue
+        #         e2c[c.entity_id] = c
 
-            return e2c[e]
+        #     return e2c[e]
+
+        for c in self.components:
+            if c and c.entity_id == e:
+                return c
+        return None
 
     def arbiter2components(self, arbiter, coltype1, coltype2):
         s1, s2 = arbiter.shapes
@@ -115,14 +126,14 @@ class Fear(GameSystem):
         c1.rat_contact += 1
         c2.rat_contact += 1
 
-        return False
+        return True
 
     def rat_vs_rat_end(self, _space, arbiter):
         c1, c2 = self.arbiter2components(arbiter, defs.coltype_rat, defs.coltype_rat)
 
         c1.rat_contact -= 1
         c2.rat_contact -= 1
-
+        
         return True
 
     def rat_vs_stone_begin(self, _space, arbiter):
@@ -255,7 +266,7 @@ class Fear(GameSystem):
             # courage things
             # e = self.entity(c)
             if c.rat_contact >= defs.min_contact_to_get_courage:
-                c.courage = min(defs.max_courage, c.courage * 1.02)
+                c.courage = min(defs.max_courage, c.courage * 1.04)
                 # e.animation.name = 'rat-red'
             else:
                 c.courage *= 0.998

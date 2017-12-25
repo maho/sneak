@@ -73,6 +73,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         sm.load_sound("fail", "snd/fail.ogg", 1)
         sm.load_sound("stone", "snd/stone.ogg", 20)
         sm.load_sound("shout", "snd/shout.ogg")
+        sm.load_sound("go", "snd/game-over.ogg")
+        sm.load_sound("lu", "snd/levelup.ogg")
 
     def load_models(self):
         self.load_animation('walk', 50, 50, "person-walk-%02d", 12)
@@ -104,7 +106,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         if reset:
             self.points = 0
-            self.lives = 3
+            self.lives = defs.initial_lives
             self.levelnum = 0
             self.num_rats = defs.num_rats
             self.num_stones = defs.num_stones
@@ -117,6 +119,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.num_stones = int(self.num_stones * stomult + stoadd)
             # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
+            self.gameworld.sound_manager.play('lu')
 
         self.gameworld.state = 'levelnum'
 
@@ -234,7 +237,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        'collision_type': defs.coltype_stone,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 20,
+                                                           'outer_radius': 30,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
@@ -262,7 +265,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                        'collision_type': defs.coltype_rat,
                                                        'shape_info': {
                                                            'inner_radius': 0,
-                                                           'outer_radius': 15,
+                                                           'outer_radius': 5,
                                                            'mass': 50,
                                                            'offset': (0, 0)
                                                        },
@@ -292,6 +295,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         if self.lives < 0:
             self.gameworld.state = 'gameover'
+            self.gameworld.sound_manager.play('go')
             return
 
         self.gameworld.state = 'fail'
@@ -377,13 +381,13 @@ print("ENDBODY")
 
 if __name__ == '__main__':
     print("BEFORE")
-    # if "DEBUG" in os.environ:
-    #     def debug_signal_handler(__sig, __frame):
-    #         import pudb
-    #         pudb.set_trace()
+    if "DEBUG" in os.environ:
+        def debug_signal_handler(__sig, __frame):
+            import pudb
+            pudb.set_trace()
 
-    #     import signal
-    #     signal.signal(signal.SIGINT, debug_signal_handler)
+        import signal
+        signal.signal(signal.SIGINT, debug_signal_handler)
 
     SneakApp().run()
     print("AFTER")

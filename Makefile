@@ -1,4 +1,4 @@
-BASE_VERSION=0.16
+BASE_VERSION=0.17
 VERSION=$(BASE_VERSION).$(shell cat .release)
 
 
@@ -26,7 +26,7 @@ RELAPKPATH=bin/$(RELAPKNAME)
 release: $(RELAPKPATH)
 
 $(RELAPKPATH): uprel atlas
-	sudo -u utils/buildozer.sh --verbose android release
+	sudo -EH -u bdozer utils/buildozer.sh --verbose android release
 	cp -v .buildozer/android/platform/build/dists/sneakk/bin/$(RELAPKNAME) bin/
 
 upload: $(RELAPKPATH)

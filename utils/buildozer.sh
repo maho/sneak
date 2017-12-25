@@ -6,4 +6,5 @@
 
 export PATH=$HOME/bin:$PATH
 
+echo PATH=$PATH
 buildozer "$@"
