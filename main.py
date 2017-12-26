@@ -52,6 +52,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.lives = None
         self.person_eid = None
         self.stones_in_game = set()
+        self.rat_speed = None
 
         self.num_rats = defs.num_rats
         self.num_stones = defs.num_stones
@@ -110,16 +111,21 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.levelnum = 0
             self.num_rats = defs.num_rats
             self.num_stones = defs.num_stones
+            self.rat_speed = defs.rat_speed[:]
         else:
             radd, rmult = defs.numrats_change
             stoadd, stomult = defs.numstones_change
             mapadd, mapmult = defs.mapsize_change
+            rsadd, rsmult = defs.rat_speed_incr
 
             self.num_rats = min(int(self.num_rats * rmult + radd), defs.numrats_limit)
             self.num_stones = int(self.num_stones * stomult + stoadd)
             # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
             self.gameworld.sound_manager.play('lu')
+            
+            for i in (0, 1):
+                self.rat_speed[i] = int(self.rat_speed[i] * rsmult + rsadd)
 
         self.gameworld.state = 'levelnum'
 

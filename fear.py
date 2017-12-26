@@ -63,7 +63,7 @@ class Fear(GameSystem):
         comp.courage = 1.0
         comp.stone_contact = False
         comp.rat_contact = 0
-        comp.rat_speed = randint(*defs.rat_speed)  # used only for rats
+        comp.rat_speed = randint(*self.game.rat_speed)  # used only for rats
         comp.anim_changed = False
         comp.shout_time = -1
 
