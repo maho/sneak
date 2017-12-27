@@ -18,7 +18,8 @@ class SneakSteeringSystem(GameSystem):
 
     def __init__(self, *a, **kwa):
         super(SneakSteeringSystem, self).__init__(*a, **kwa)
-        self.touch_positions = []
+        self.touch_base = None
+        self.touch = None
         self.keys_pressed = set()
 
         EventLoop.window.bind(on_key_down=self.on_key_down, on_key_up=self.on_key_up)
@@ -58,15 +59,14 @@ class SneakSteeringSystem(GameSystem):
         self.keys_pressed.add(code)
 
     def on_touch_up(self, __touch):
-        # self.touch_positions = []
-        pass
+        self.touch_base = None
+        self.touch = None
 
     def on_touch_down(self, touch):
-        self.touch_positions.append(touch.pos)
+        self.touch_base = touch.pos
 
     def on_touch_move(self, touch):
-        self.touch_positions.append(touch.pos)
-        Logger.debug("touch_spos=%s", touch.pos)
+        self.touch = touch.pos
 
     def apply_run(self, entity, vector=None, full_speed_len=None):  # pylint: disable=no-self-use
         if vector:
@@ -105,13 +105,9 @@ class SneakSteeringSystem(GameSystem):
             if accel_vec:
                 vec = Vector(accel_vec)
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_accel)
-            elif self.touch_positions:
-                # p = e.position.pos
-                # tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
-                # vec = Vector(tpos) - p
-                self.touch_positions = self.touch_positions[-defs.keep_touch_positions:]
-                fx, fy = self.touch_positions[0]
-                tx, ty = self.touch_positions[-1]
+            elif self.touch and self.touch_base:
+                fx, fy = self.touch_base
+                tx, ty = self.touch
                 vec = Vector((tx - fx, ty - fy))
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_touchvec)
 

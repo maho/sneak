@@ -41,8 +41,7 @@ shout_delay = 5
 # steering
 angle_step = math.radians(7)
 full_speed_accel = math.pi / 16
-keep_touch_positions = 10
-full_speed_touchvec = 70
+full_speed_touchvec = 90
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion
@@ -50,6 +49,5 @@ inf = 1.0e10  # potential in place/tile of attraction/repulsion
 
 if "DEBUG" in os.environ:
     num_rats = 10
-    #force_threshold = 2
+    # force_threshold = 2
     initial_lives = 1
-
