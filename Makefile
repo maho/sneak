@@ -10,8 +10,11 @@ assets/objects.atlas: $(wildcard img/*.png)
 uprel:
 	echo $$(($$(cat .release) + 1)) > .release
 
-build: uprel
-	buildozer --verbose android debug 
+debug: uprel
+	sudo -EH -u bdozer utils/buildozer.sh --verbose android debug deploy run logcat
+
+debugrun:
+	sudo -EH -u bdozer utils/buildozer.sh --verbose android deploy run logcat
 
 export P4A_RELEASE_KEYSTORE=/home/maho/.buildozer/sneak-upload-keystore.jks
 export P4A_RELEASE_KEYALIAS=myalias4

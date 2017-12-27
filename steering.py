@@ -33,7 +33,6 @@ class SneakSteeringSystem(GameSystem):
                 spatialorientation.enable_listener()
                 while True:
                     x, y, z = spatialorientation.orientation
-                    Logger.debug("orientation = %s, %s, %s", x, y, z)
                     if x and y and z:
                         break
                 self.has_accel = True
@@ -59,7 +58,8 @@ class SneakSteeringSystem(GameSystem):
         self.keys_pressed.add(code)
 
     def on_touch_up(self, __touch):
-        self.touch_positions = []
+        # self.touch_positions = []
+        pass
 
     def on_touch_down(self, touch):
         self.touch_positions.append(touch.pos)
@@ -73,7 +73,6 @@ class SneakSteeringSystem(GameSystem):
             if full_speed_len:
                 vlen = vector.length()
                 speed = min(vlen / full_speed_len * defs.person_speed, defs.person_speed)
-                Logger.debug("vlen = %s, speed = %s", vlen, speed)
             else:
                 speed = defs.person_speed
             v = vector.normalize() * speed
@@ -87,7 +86,6 @@ class SneakSteeringSystem(GameSystem):
         accel_vec = None
         if self.has_accel:
             _azimuth, pitch, roll = spatialorientation.orientation
-            # Logger.debug("az, pitch, roll = %0.4f, %0.4f, %0.4f", azimuth, pitch, roll)
             accel_vec = (-pitch, roll)
 
         for comp in self.components:
@@ -111,12 +109,10 @@ class SneakSteeringSystem(GameSystem):
                 # p = e.position.pos
                 # tpos = self.camera.convert_from_screen_to_world(self.touch.pos)
                 # vec = Vector(tpos) - p
-                self.touch_positions = self.touch_positions[-20:]
-                Logger.debug("tposs=%s", self.touch_positions)
+                self.touch_positions = self.touch_positions[-defs.keep_touch_positions:]
                 fx, fy = self.touch_positions[0]
                 tx, ty = self.touch_positions[-1]
                 vec = Vector((tx - fx, ty - fy))
-                Logger.debug("vec=%s", vec)
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_touchvec)
 
 
