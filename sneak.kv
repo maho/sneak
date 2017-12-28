@@ -77,6 +77,7 @@ SneakGame:
             fear: fear
             camera: gameview
             updateable: True
+            joystick: gameworld.gamescreenmanager.joystick
 
         CymunkPhysics:
             id: cymunk_physics
@@ -110,6 +111,7 @@ SneakGame:
 
     game: self.parent
     steering: self.parent.steering
+    joystick: joy
 
 
     GameScreen:
@@ -202,9 +204,12 @@ SneakGame:
                         source: "atlas://assets/objects/shout-1"
                         center_x: self.parent.center_x
                         center_y: self.parent.center_y
-
                 Widget:
-                    size_hint: 0.9, 1.0
+
+                VirtualJoystick:
+                    id: joy
+
+
 
 
 

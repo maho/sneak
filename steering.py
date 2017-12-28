@@ -58,29 +58,18 @@ class SneakSteeringSystem(GameSystem):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
         self.keys_pressed.add(code)
 
-    def on_touch_up(self, __touch):
-        self.touch_base = None
-        self.touch = None
-
-    def on_touch_down(self, touch):
-        self.touch_base = touch.pos
-
-    def on_touch_move(self, touch):
-        self.touch = touch.pos
-
     def apply_run(self, entity, vector=None, full_speed_len=None):  # pylint: disable=no-self-use
         if vector:
             if full_speed_len:
                 vlen = vector.length()
                 speed = min(vlen / full_speed_len * defs.person_speed, defs.person_speed)
-            else:
-                speed = defs.person_speed
-            v = vector.normalize() * speed
+                vector = vector.normalize() * speed
             entity.cymunk_physics.body.angle = radians(vector.angle((0, 1)))
         else:
-            v = Vector((0, defs.person_speed)).rotate(degrees(entity.cymunk_physics.body.angle))
+            vector = Vector((0, defs.person_speed)).\
+                        rotate(degrees(entity.cymunk_physics.body.angle))
 
-        entity.cymunk_physics.body.velocity = v
+        entity.cymunk_physics.body.velocity = vector
 
     def update(self, _dt):
         accel_vec = None
@@ -95,21 +84,19 @@ class SneakSteeringSystem(GameSystem):
             e = self.gameworld.entities[eid]
             body = e.cymunk_physics.body
 
-            if 'left' in self.keys_pressed:
-                body.angle += defs.angle_step
-            if 'right' in self.keys_pressed:
-                body.angle -= defs.angle_step
-            if 'up' in self.keys_pressed:
-                self.apply_run(e)
-
-            if accel_vec:
+            if self.keys_pressed:
+                if 'left' in self.keys_pressed:
+                    body.angle += defs.angle_step
+                if 'right' in self.keys_pressed:
+                    body.angle -= defs.angle_step
+                if 'up' in self.keys_pressed:
+                    self.apply_run(e)
+            elif accel_vec:
                 vec = Vector(accel_vec)
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_accel)
-            elif self.touch and self.touch_base:
-                fx, fy = self.touch_base
-                tx, ty = self.touch
-                vec = Vector((tx - fx, ty - fy))
-                self.apply_run(e, vec, full_speed_len=defs.full_speed_touchvec)
+            else:
+                vec = self.joystick.vec * defs.person_speed
+                self.apply_run(e, vec)
 
 
 Factory.register('SneakSteeringSystem', cls=SneakSteeringSystem)

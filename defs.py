@@ -41,7 +41,6 @@ shout_delay = 5
 # steering
 angle_step = math.radians(7)
 full_speed_accel = math.pi / 16
-full_speed_touchvec = 90
 
 # misc
 inf = 1.0e10  # potential in place/tile of attraction/repulsion

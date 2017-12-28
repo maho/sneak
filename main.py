@@ -30,6 +30,7 @@ from defedict import defedict  # noqa: E402
 import defs  # noqa: E402
 import fear # noqa:
 import steering # noqa:
+import virtjoy # noqa:
 
 texture_manager.load_atlas('assets/objects.atlas')
 
