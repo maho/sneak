@@ -168,7 +168,30 @@ SneakGame:
     GameScreen:
         id: main_screen
         name: 'main'
-        
+       
+        FloatLayout:
+            # canvas:
+            #     Color:
+            #         rgba: 1, 0, 0, 0.3
+            #     Rectangle:
+            #         pos: self.pos
+            #         size: self.size
+
+            pos: self.pos
+            size: self.size
+
+            VirtualJoystick:
+                # canvas:
+                #     Color:
+                #         rgba: 0, 1, 0, 0.3
+                #     Rectangle:
+                #         pos: self.pos
+                #         size: self.size
+                id: joy
+                size: 180, 180
+                size_hint: None, None
+                pos: 800, 400
+
         BoxLayout:
             orientation: 'vertical'
 
@@ -205,9 +228,6 @@ SneakGame:
                         center_x: self.parent.center_x
                         center_y: self.parent.center_y
                 Widget:
-
-                VirtualJoystick:
-                    id: joy
 
 
 

@@ -1,3 +1,4 @@
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import NumericProperty, ObjectProperty
@@ -38,6 +39,8 @@ class VirtualJoystick(Widget):
         self.touch = self.center[:]
         self.bind(size=self.update)
         self.bind(pos=self.update)
+
+        Clock.schedule_once(self.bind_update_pos)
         self.vec = Vector((0, 0))
 
     def update(self, *__args):
@@ -45,12 +48,26 @@ class VirtualJoystick(Widget):
         self.touch = self.center[:]
         Logger.debug("self.touch = %s", self.touch)
 
+    def bind_update_pos(self, _dt):
+        if not self.parent:
+            Clock.schedule_once(self.bind_update_pos)
+            return
+        self.parent.bind(size=self.update_pos)
+
+    def update_pos(self, *_args):
+        self.center_y = self.parent.center_y
+        self.center_x = self.parent.width - self.width - 100
+        Logger.debug("self.pos = %s, self.parent.pos=%s, self.center = %s, self.parent.center=%s", self.pos, self.parent.pos, self.center, self.parent.center)
+
+
     def on_touch_up(self, __touch):
         self.touch = self.center[:]
         Logger.debug("self.touch = %s", self.touch)
 
     def on_touch_down(self, touch):
-        self.on_touch_move(touch)
+        #self.on_touch_move(touch)
+
+        self.center = touch.pos
 
     def on_touch_move(self, touch):
         vec = Vector(touch.pos) - Vector(self.center)
