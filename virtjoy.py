@@ -1,4 +1,4 @@
-from kivy.clock import Clock
+# from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import NumericProperty, ObjectProperty
@@ -39,35 +39,38 @@ class VirtualJoystick(Widget):
         self.touch = self.center[:]
         self.bind(size=self.update)
         self.bind(pos=self.update)
+        self.disabled = True
 
-        Clock.schedule_once(self.bind_update_pos)
+        # Clock.schedule_once(self.bind_update_pos)
+        self.vec = Vector((0, 0))
+
+    def disable(self):
+        self.pos = (-1000, -1000)
+        self.disabled = True
         self.vec = Vector((0, 0))
 
     def update(self, *__args):
         self.radius = min(self.size[0], self.size[1]) / 2
         self.touch = self.center[:]
-        Logger.debug("self.touch = %s", self.touch)
 
-    def bind_update_pos(self, _dt):
-        if not self.parent:
-            Clock.schedule_once(self.bind_update_pos)
-            return
-        self.parent.bind(size=self.update_pos)
+    # def bind_update_pos(self, _dt):
+    #     if not self.parent:
+    #         Clock.schedule_once(self.bind_update_pos)
+    #         return
+    #     self.parent.bind(size=self.update_pos)
 
     def update_pos(self, *_args):
         self.center_y = self.parent.center_y
         self.center_x = self.parent.width - self.width - 100
-        Logger.debug("self.pos = %s, self.parent.pos=%s, self.center = %s, self.parent.center=%s", self.pos, self.parent.pos, self.center, self.parent.center)
-
 
     def on_touch_up(self, __touch):
         self.touch = self.center[:]
-        Logger.debug("self.touch = %s", self.touch)
+        self.disable()
 
     def on_touch_down(self, touch):
-        #self.on_touch_move(touch)
-
+        # self.on_touch_move(touch)
         self.center = touch.pos
+        self.disabled = False
 
     def on_touch_move(self, touch):
         vec = Vector(touch.pos) - Vector(self.center)
@@ -75,6 +78,5 @@ class VirtualJoystick(Widget):
             vec = vec.normalize() * self.radius
 
         self.touch = Vector(self.center) + vec
-        Logger.debug("self.touch = %s", self.touch)
 
         self.vec = vec / self.radius

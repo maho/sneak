@@ -1,4 +1,4 @@
-BASE_VERSION=0.18
+BASE_VERSION=0.19
 VERSION=$(BASE_VERSION).$(shell cat .release)
 
 
@@ -30,7 +30,7 @@ release: $(RELAPKPATH)
 
 $(RELAPKPATH): uprel atlas
 	sudo -EH -u bdozer utils/buildozer.sh --verbose android release
-	cp -v .buildozer/android/platform/build/dists/sneakk/bin/$(RELAPKNAME) bin/
+	# cp -v .buildozer/android/platform/build/dists/sneakk/bin/$(RELAPKNAME) bin/
 
 upload: $(RELAPKPATH)
 	python utils/basic_upload_apks.py maho.sneakk $(RELAPKPATH)

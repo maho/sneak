@@ -147,15 +147,13 @@ SneakGame:
                 Widget:
                 Label:
                     text: "Level %s"%(root.game.levelnum + 1)
-                    font_size: 30
+                    font_size: 45
                 BoxLayout:
-                    Widget:
                     Button:
-                        font_size: 20
+                        font_size: 40
                         text: "Continue"
                         on_press: root.game.on_play()
                         size_hint: 1.0, 0.3
-                    Widget:
                 BoxLayout:
                     CheckBox:
                         id: use_accel
@@ -163,6 +161,21 @@ SneakGame:
                     Label:
                         text: "use accelerometer"
 
+            Widget:
+            
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                Widget:
+
+                Label:
+                    text_size: self.width, None
+                    text: "Goal:\n\nAvoid creatures and collect all stones.\n\nSteering: \n - Use touch/mouse to show direction and shout button,\n - or use accelerometer (checkbox below)" + "\n - or use keyboard: [left]/[right] - change direction, [up] - run, [a] - shout"
+                    font_size: 30
+
+                Widget:
+            
             Widget:
 
     GameScreen:
@@ -190,7 +203,7 @@ SneakGame:
                 id: joy
                 size: 280, 280
                 size_hint: None, None
-                pos: 800, 400
+                pos: -800, -400  # off the screen by default
 
         BoxLayout:
             orientation: 'vertical'
@@ -234,6 +247,6 @@ SneakGame:
 
 
 <Label>:
-    font_name: "assets/fonts/alpha_echo.ttf"
-    font_size: 20
-    # color: 1.0, 1.0, 0.5, 0.9
+    font_name: "assets/fonts/Amatic-Bold.ttf"
+    font_size: 30
+    color: 1.0, 1.0, 0.5, 0.8

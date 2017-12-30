@@ -50,3 +50,4 @@ if "DEBUG" in os.environ:
     num_rats = 10
     # force_threshold = 2
     initial_lives = 1
+    lives_add = 0
