@@ -133,6 +133,7 @@ SneakGame:
                         text: "Play Again"
                         on_press: root.game.advance_level(reset=True)
                         size_hint: 1.0, 0.3
+                        background_color: 1, 1, 1, 0.1
                     Widget:
                 Widget:
             Widget:
@@ -150,10 +151,11 @@ SneakGame:
                     font_size: 45
                 BoxLayout:
                     Button:
-                        font_size: 40
+                        font_size: 35
                         text: "Continue"
                         on_press: root.game.on_play()
-                        size_hint: 1.0, 0.3
+                        size_hint: 1.0, 0.4
+                        background_color: 1, 1, 1, 0.1
                 BoxLayout:
                     CheckBox:
                         id: use_accel
@@ -176,7 +178,6 @@ SneakGame:
 
                 Widget:
             
-            Widget:
 
     GameScreen:
         id: main_screen

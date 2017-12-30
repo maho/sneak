@@ -94,7 +94,7 @@ class SneakSteeringSystem(GameSystem):
             elif accel_vec:
                 vec = Vector(accel_vec)
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_accel)
-            else:
+            elif not self.joystick.disabled:
                 vec = self.joystick.vec * defs.person_speed
                 self.apply_run(e, vec)
 
