@@ -1,11 +1,11 @@
 # from kivy.clock import Clock
 from kivy.lang import Builder
-# from kivy.logger import Logger
+#  from kivy.logger import Logger
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
-# from plyer import vibrator
+from plyer import vibrator
 
 Builder.load_string("""
 <VirtualJoystick>:
@@ -65,29 +65,30 @@ class VirtualJoystick(Widget):
         self.center_y = self.parent.center_y
         self.center_x = self.parent.width - self.width - 100
 
-    def on_touch_up(self, __touch):
+    def on_touch_up(self, touch):
+        if "vjtouch" not in touch.ud:
+            return
         self.touch = self.center[:]
         self.disable()
 
     def on_touch_down(self, touch):
-        # self.on_touch_move(touch)
         self.center = touch.pos
         self.disabled = False
+        touch.ud["vjtouch"] = True
 
     def on_touch_move(self, touch):
+        if "vjtouch" not in touch.ud:
+            return
         vec = Vector(touch.pos) - Vector(self.center)
 
-        vlen2 = vec.length2()
+        vlen = vec.length()
 
-        # short vibration feedback when in center
-        # try:
-        # if vlen2 < 32:
-        #    vibrator.vibrate(0.05)
-        # except Exception: # noqa: 
-        #     pass
-
-        if vlen2 > self.radius**2:
+        if vlen > self.radius:
             vec = vec.normalize() * self.radius
+
+        stripsize = 0.2
+        if vlen < self.radius * stripsize or self.radius * (1.0 + stripsize) > vlen > self.radius:
+            vibrator.vibrate(0.005)
 
         self.touch = Vector(self.center) + vec
 

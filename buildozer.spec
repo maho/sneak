@@ -90,7 +90,7 @@ fullscreen = 1
 #android.presplash_color = #FFFFFF
 
 # (list) Permissions
-# android.permissions = INTERNET, VIBRATE
+android.permissions = VIBRATE
 
 # (int) Android API to use
 #android.api = 19
