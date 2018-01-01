@@ -87,8 +87,11 @@ class VirtualJoystick(Widget):
             vec = vec.normalize() * self.radius
 
         stripsize = 0.2
-        if vlen < self.radius * stripsize or self.radius * (1.0 + stripsize) > vlen > self.radius:
-            vibrator.vibrate(0.005)
+        try:
+            if vlen < self.radius * stripsize or self.radius * (1.0 + stripsize) > vlen > self.radius:
+                vibrator.vibrate(0.005)
+        except NotImplementedError:
+            pass
 
         self.touch = Vector(self.center) + vec
 
