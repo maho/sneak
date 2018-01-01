@@ -1,7 +1,9 @@
 # pylint: disable=protected-access
+from functools import partial
 from math import radians, degrees
 
 from kivy.base import EventLoop
+from kivy.clock import Clock
 from kivy.core.window import Keyboard, Window
 from kivy.factory import Factory
 from kivy.logger import Logger
@@ -27,26 +29,30 @@ class SneakSteeringSystem(GameSystem):
         self.has_accel = False
         self.accel_base = None
 
-    def set_accelerometer(self, cbox):
-        active = cbox.active
+    def set_accelerometer(self, tb, _dt=False):
+        active = tb.state == 'down'
         if active:
             try:
                 spatialorientation.enable_listener()
-                while True:
-                    x, y, z = spatialorientation.orientation
-                    if x and y and z:
-                        break
+                x, y, z = spatialorientation.orientation
+                if not x and not y and not z:
+                    Clock.schedule_once(partial(self.set_accelerometer, tb), 0.3)
+                    Logger.debug("not ready yet")
+                    return
+                Logger.debug("ready!")
+                tb.text = "Accelerometer in use"
                 self.has_accel = True
-            except (Exception) as e:  # pylint: disable=broad-except
-                Logger.error("spatial not available? %s", e)
+            except Exception:  # pylint: disable=broad-except
+                tb.state = 'normal'
+                tb.text = "Accelerometer not available"
                 self.has_accel = False
-                cbox.active = False
         else:
             try:
                 spatialorientation.disable_listener()
             except Exception:  # pylint: disable=broad-except
                 pass
             self.has_accel = False
+            tb.text = "Accelerometer of"
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)

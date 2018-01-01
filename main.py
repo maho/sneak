@@ -8,8 +8,8 @@ from random import randint
 import time
 
 
-# from kivy.config import Config
-# Config.set('kivy', 'log_level', 'debug')
+from kivy.config import Config
+Config.set('kivy', 'log_level', 'debug')
 # 
 from kivy.app import App  # noqa: E402
 from kivy.clock import Clock  # noqa: E402
@@ -388,13 +388,13 @@ print("ENDBODY")
 
 if __name__ == '__main__':
     print("BEFORE")
-    if "DEBUG" in os.environ:
-        def debug_signal_handler(__sig, __frame):
-            import pudb
-            pudb.set_trace()
+    # if "DEBUG" in os.environ:
+    #     def debug_signal_handler(__sig, __frame):
+    #         import pudb
+    #         pudb.set_trace()
 
-        import signal
-        signal.signal(signal.SIGINT, debug_signal_handler)
+    #     import signal
+    #     signal.signal(signal.SIGINT, debug_signal_handler)
 
     SneakApp().run()
     print("AFTER")
