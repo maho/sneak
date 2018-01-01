@@ -123,13 +123,14 @@ SneakGame:
                 orientation: 'vertical'
                 Label:
                     text: "Game Over"
-                    font_size: mm(9)
+                    font_size: '70sp'
                 Label:
+                    font_size: '50sp'
                     text: "Points: %s"%root.game.points
                 BoxLayout:
                     Widget:
                     Button:
-                        font_size: mm(9)
+                        font_size: '30sp'
                         text: "Play Again"
                         on_press: root.game.advance_level(reset=True)
                         size_hint: 1.0, 0.3
@@ -177,11 +178,14 @@ SneakGame:
                         height: self.texture_size[1] + sp(30)
 
                     Widget:
+                        size_hint: 0.1, 0.3
                     Button:
                         font_size: '30sp'
                         text: "Continue"
                         on_press: root.game.on_play()
                         # text_size: self.size
+                    Widget:
+                        size_hint: 0.1, 0.2
 
                 Widget:
                     size_hint: 0.2, 0.1
@@ -197,7 +201,7 @@ SneakGame:
                     Label:
                         text_size: self.width, None
                         text: "Goal:\n\nAvoid creatures and collect all stones.\n\nSteering: \n - Use touch/mouse to show direction and shout button,\n - or use accelerometer (checkbox below)" + "\n - or use keyboard: \n      -[left]/[right] - change direction,\n       - [up] - run,\n       - [a] - shout"
-                        font_size: min(self.size)/13
+                        font_size: min(self.size)/18
 
                     Widget:
                         size_hint: 0.1, 0.1
@@ -275,7 +279,7 @@ SneakGame:
 
 
 <Label>:
-    font_name: "assets/fonts/Amatic-Bold.ttf"
+    font_name: "assets/fonts/how-cute.ttf"
     font_size: '25sp'
     color: 1.0, 1.0, 0.5, 0.8
 
