@@ -149,17 +149,17 @@ SneakGame:
 
             Label:
                 text: "Level %s"%(root.game.levelnum + 1)
-                font_size: '60sp'
+                font_size: self.width/10
                 size_hint: 1, None
                 height: self.texture_size[1]
             
             Widget: 
                 size_hint: 0.1, 0.1
 
-            BoxLayout:
+            BoxLayout: #horizontal
                 
                 Widget:
-                    size_hint: 0.1, 0.1
+                    size_hint: 0.2, 0.1
                 
                 BoxLayout:
                     orientation: 'vertical'
@@ -184,11 +184,12 @@ SneakGame:
                         # text_size: self.size
 
                 Widget:
-                    size_hint: 0.1, 0.1
+                    size_hint: 0.2, 0.1
 
 
                 BoxLayout:
                     orientation: 'vertical'
+                    size_hint: 0.5, 1
 
                     Widget:
                         size_hint: 0.1, 0.1
@@ -196,7 +197,7 @@ SneakGame:
                     Label:
                         text_size: self.width, None
                         text: "Goal:\n\nAvoid creatures and collect all stones.\n\nSteering: \n - Use touch/mouse to show direction and shout button,\n - or use accelerometer (checkbox below)" + "\n - or use keyboard: \n      -[left]/[right] - change direction,\n       - [up] - run,\n       - [a] - shout"
-                        font_size: 30
+                        font_size: self.width/16
 
                     Widget:
                         size_hint: 0.1, 0.1
@@ -275,11 +276,11 @@ SneakGame:
 
 <Label>:
     font_name: "assets/fonts/Amatic-Bold.ttf"
-    font_size: '20sp'
+    font_size: '25sp'
     color: 1.0, 1.0, 0.5, 0.8
 
 <Button>:
-    font_size: '20sp'
+    font_size: '25sp'
     background_color: 1.0, 1, 0, 0.1
 
 <ToggleButton>:
