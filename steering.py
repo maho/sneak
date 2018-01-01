@@ -40,7 +40,7 @@ class SneakSteeringSystem(GameSystem):
                     Logger.debug("not ready yet")
                     return
                 Logger.debug("ready!")
-                tb.text = "Accelerometer in use"
+                tb.text = "Accelerometer enabled"
                 self.has_accel = True
             except Exception:  # pylint: disable=broad-except
                 tb.state = 'normal'
@@ -52,7 +52,7 @@ class SneakSteeringSystem(GameSystem):
             except Exception:  # pylint: disable=broad-except
                 pass
             self.has_accel = False
-            tb.text = "Accelerometer of"
+            tb.text = "Accelerometer disabled"
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)

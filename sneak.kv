@@ -149,7 +149,7 @@ SneakGame:
 
             Label:
                 text: "Level %s"%(root.game.levelnum + 1)
-                font_size: self.width/10
+                font_size: self.width/14
                 size_hint: 1, None
                 height: self.texture_size[1]
             
@@ -197,7 +197,7 @@ SneakGame:
                     Label:
                         text_size: self.width, None
                         text: "Goal:\n\nAvoid creatures and collect all stones.\n\nSteering: \n - Use touch/mouse to show direction and shout button,\n - or use accelerometer (checkbox below)" + "\n - or use keyboard: \n      -[left]/[right] - change direction,\n       - [up] - run,\n       - [a] - shout"
-                        font_size: self.width/16
+                        font_size: min(self.size)/13
 
                     Widget:
                         size_hint: 0.1, 0.1
@@ -229,7 +229,7 @@ SneakGame:
                 #         pos: self.pos
                 #         size: self.size
                 id: joy
-                size: 280, 280
+                size: 200, 200
                 size_hint: None, None
                 pos: -800, -400  # off the screen by default
 
