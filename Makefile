@@ -1,4 +1,4 @@
-BASE_VERSION=0.20
+BASE_VERSION=0.21
 VERSION=$(BASE_VERSION).$(shell cat .release)
 
 
@@ -23,7 +23,7 @@ export P4A_RELEASE_KEYALIAS_PASSWD=$(shell cat .keypass)
 
 export APP_VERSION=$(VERSION)
 
-RELAPKNAME=Sneakk-$(VERSION)-release.apk
+RELAPKNAME=sneakk-$(VERSION)-release.apk
 RELAPKPATH=bin/$(RELAPKNAME)
 
 release: $(RELAPKPATH)

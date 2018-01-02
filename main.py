@@ -1,18 +1,19 @@
 # pylint: disable=attribute-defined-outside-init, wrong-import-position
 # import cProfile
 
-print("BEGBODY")
-
 import os
 from random import randint
 import time
 
 
-from kivy.config import Config
-Config.set('kivy', 'log_level', 'debug')
-# 
+# from kivy.config import Config
+# Config.set('kivy', 'log_level', 'debug')
+#
 from kivy.app import App  # noqa: E402
+from kivy.base import EventLoop
 from kivy.clock import Clock  # noqa: E402
+from kivy.core.window import Keyboard, Window
+# from kivy.logger import Logger
 from kivy.vector import Vector  # noqa: E402
 from kivy.properties import NumericProperty, ObjectProperty  # noqa: E402
 from kivy.uix.widget import Widget  # noqa: E402
@@ -62,6 +63,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         Clock.schedule_interval(self.update, 0.05)
         Clock.schedule_interval(self.update_arrow, 0.01)
+
+        EventLoop.window.bind(on_key_up=self.on_key_up)
 
     def init_game(self):
         self.setup_states()
@@ -124,11 +127,18 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
             self.gameworld.sound_manager.play('lu')
-            
+
             for i in (0, 1):
                 self.rat_speed[i] = int(self.rat_speed[i] * rsmult + rsadd)
 
         self.gameworld.state = 'levelnum'
+
+    def on_key_up(self, _win, key, *_args, **_kwargs):
+        code = Keyboard.keycode_to_string(Window._system_keyboard, key)
+        # Logger.debug("code=%s", code)
+        if self.gameworld.state == 'levelnum' and code == 'spacebar':
+            self.on_play()
+            return True
 
     def on_play(self):
         self.gameworld.state = 'main'
@@ -169,7 +179,8 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         self.gameworld.add_state(state_name='fail',
                                  systems_added=[],
-                                 systems_removed=[], systems_paused=['fear', 'cymunk_physics', 'animation'],
+                                 systems_removed=[],
+                                 systems_paused=['fear', 'cymunk_physics', 'animation'],
                                  systems_unpaused=[],
                                  screenmanager_screen='main')
 
@@ -194,7 +205,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.init_callbacks()
 
     def draw_person(self):
-        if self.person_anim == None:
+        if self.person_anim is None:
             self.person_anim = 'grace'
         self.person_eid = self.gameworld.init_entity(
                         *defedict({
