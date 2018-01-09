@@ -22,6 +22,7 @@ export P4A_RELEASE_KEYSTORE_PASSWD=$(shell cat .keypass)
 export P4A_RELEASE_KEYALIAS_PASSWD=$(shell cat .keypass)
 
 export APP_VERSION=$(VERSION)
+export URL_kivy=https://github.com/mahomahomaho/kivy/archive/master2.zip
 
 RELAPKNAME=sneakk-$(VERSION)-release.apk
 RELAPKPATH=bin/$(RELAPKNAME)

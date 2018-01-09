@@ -225,7 +225,7 @@ p4a.source_dir = /home/maho/workspace/sneak/.p4a
 [buildozer]
 
 
-# build_type = ant
+build_type = ant
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2

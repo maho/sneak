@@ -4,7 +4,7 @@ import os
 # level specific data
 map_size = (1000, 1000)
 num_stones = 5
-num_rats = 2
+num_rats = 3
 
 
 # characters
@@ -47,7 +47,7 @@ inf = 1.0e10  # potential in place/tile of attraction/repulsion
 
 
 if "DEBUG" in os.environ:
-    num_rats = 10
+    num_rats = 50
     # force_threshold = 2
     initial_lives = 1
     lives_add = 0
