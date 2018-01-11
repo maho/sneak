@@ -1,4 +1,4 @@
-# pylint: disable=no-member,unused-variable,unused-import
+# pylint: disable=no-member,unused-variable,unused-import,protected-access
 from functools import partial
 from math import pi
 from random import randint
@@ -29,7 +29,7 @@ import defs
 
 
 def debcom(com):
-    return "[#%s c:%0.2f]"%(com.entity_id, com.courage)
+    return "[#%s c:%0.2f]" % (com.entity_id, com.courage)
 
 
 class Fear(GameSystem):
@@ -86,21 +86,7 @@ class Fear(GameSystem):
                                      begin_func=self.rat_vs_rat_begin,
                                      separate_func=self.rat_vs_rat_end)
 
-    def entity2component(self, e, static={}):
-        # #FIXME: fast, but error - prone. Check if just iterate over isn't fast enough
-        #
-        # e2c = static
-        # try:
-        #     return e2c[e]
-        # except KeyError:
-        #     # recalc entity to components
-        #     for c in self.components:
-        #         if c is None:
-        #             continue
-        #         e2c[c.entity_id] = c
-
-        #     return e2c[e]
-
+    def entity2component(self, e):
         for c in self.components:
             if c and c.entity_id == e:
                 return c
@@ -133,7 +119,7 @@ class Fear(GameSystem):
 
         c1.rat_contact -= 1
         c2.rat_contact -= 1
-        
+
         return True
 
     def rat_vs_stone_begin(self, _space, arbiter):
@@ -153,7 +139,6 @@ class Fear(GameSystem):
         return self.gameworld.entities[comp.entity_id]
 
     def shout(self):
-
 
         def _fn(c, _dt):
             c.attraction, c.repulsion = c.orig_data
@@ -176,20 +161,8 @@ class Fear(GameSystem):
 
             Clock.schedule_once(partial(_fn, c), defs.shout_time)
 
-    def numpy_rotate_matrixes(self):
-        for r in [-defs.rat_turn_angle, defs.rat_turn_angle]:
-            c, s = np.cos(r), np.sin(r)
-            yield np.array([c, -s, s, c]).reshape(2, 2)
-
-    def update(self, dt):  # pylint: disable=too-many-locals
-        sm = self.gameworld.sound_manager
-        self.cummtime += dt
-        if self.cummtime < 0:
-            return
-        self.cummtime -= 0.1
-
+    def prepare_data_and_velocities(self):
         comps = [c for c in self.components if c and self.entity(c)]
-
         N = len(comps)
         vels = np.zeros(N * 2).reshape(N, 2)
         entities = [self.entity(c) for c in comps]
@@ -215,25 +188,35 @@ class Fear(GameSystem):
             if c2.repulsion:
                 vels += (vecs.T * c2.repulsion**2 / dist2s**2 / courages).T
 
-        norms = np.linalg.norm(vels, axis=1)
+        return comps, entities, vels
+
+    @classmethod
+    def calculate_desired_angles(cls, comps, entities, vels):
         desired_angles = np.arctan2(vels[:, 1], vels[:, 0]) + pi / 2
-        runornots = norms > defs.force_threshold
+        runornots = np.linalg.norm(vels, axis=1) > defs.force_threshold
         real_angles = np.array([e.rotate.r for e in entities])
 
         anglediffs = (desired_angles - real_angles + 3 * pi) % (2 * pi) - pi
         rat_speeds = np.where(runornots, np.array([c.rat_speed for c in comps]), 0)
 
-
-        # FIXME: something wrong is here, it should be >, I have some mess with angle arithmetics
-        # but apparently this "wrong" works well, while "right" have strange results (rats turns in wrong direction)
         real_angles = np.where(anglediffs < 0, real_angles + defs.rat_turn_angle,
                                                 real_angles - defs.rat_turn_angle)
 
-        # real_angles = np.array([1.5*pi] * N)
-
         final_vels = np.vstack((-np.sin(real_angles), np.cos(real_angles))) * rat_speeds
 
-        for c, e, angle, runornot, (vx, vy) in zip(comps, entities, real_angles, runornots,
+        return runornots, final_vels, real_angles
+
+    def update(self, dt):
+        self.cummtime += dt
+        if self.cummtime < 0:
+            return
+        self.cummtime -= 0.1
+
+        comps, entities, vels = self.prepare_data_and_velocities()
+
+        runornots, final_vels, real_angles = self.calculate_desired_angles(comps, entities, vels)
+
+        for c, e, angle, runornot, final_vel in zip(comps, entities, real_angles, runornots,
                                                                                 final_vels.T):
             if c.nomove:
                 continue
@@ -247,13 +230,13 @@ class Fear(GameSystem):
             if c.anim_changed:
                 e.animation.animation = 'rat'
                 c.anim_changed = False
-                sm.play('rat')
+                self.gameworld.sound_manager.play('rat')
 
             body = e.cymunk_physics.body
 
             body.angle = angle
 
-            body.velocity = (vx, vy)
+            body.velocity = final_vel
 
         self.update_courages()
 
