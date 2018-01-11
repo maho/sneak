@@ -1,6 +1,6 @@
 # from kivy.clock import Clock
 from kivy.lang import Builder
-#  from kivy.logger import Logger
+# from kivy.logger import Logger
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
@@ -41,14 +41,14 @@ class VirtualJoystick(Widget):
         self.touch = self.center[:]
         self.bind(size=self.update)
         self.bind(pos=self.update)
-        self.disabled = True
 
         # Clock.schedule_once(self.bind_update_pos)
         self.vec = Vector((0, 0))
+        self.joystick_active = False
 
-    def disable(self):
+    def disable_joystick(self):
         self.pos = (-1000, -1000)
-        self.disabled = True
+        self.joystick_active = False
         self.vec = Vector((0, 0))
 
     def update(self, *__args):
@@ -73,7 +73,7 @@ class VirtualJoystick(Widget):
 
     def on_touch_down(self, touch):
         self.center = touch.pos
-        self.disabled = False
+        self.joystick_active = True
         touch.ud["vjtouch"] = True
 
     def on_touch_move(self, touch):
@@ -88,7 +88,8 @@ class VirtualJoystick(Widget):
 
         stripsize = 0.2
         try:
-            if vlen < self.radius * stripsize or self.radius * (1.0 + stripsize) > vlen > self.radius:
+            if vlen < self.radius * stripsize or \
+               self.radius * (1.0 + stripsize) > vlen > self.radius:
                 vibrator.vibrate(0.005)
         except NotImplementedError:
             pass

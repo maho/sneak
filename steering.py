@@ -56,9 +56,12 @@ class SneakSteeringSystem(GameSystem):
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
-        self.keys_pressed.remove(code)
+        if code in self.keys_pressed:
+            self.keys_pressed.remove(code)
 
     def on_key_down(self, __win, key, *__largs, **__kwargs):
+        if self.gameworld.state != 'main':  # don't receive kbd events from menus etc....
+            return
         # very dirty hack, but: we don't have any instance of keyboard anywhere, and
         # keycode_to_string should be in fact classmethod, so passing None as self is safe
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -100,7 +103,7 @@ class SneakSteeringSystem(GameSystem):
             elif accel_vec:
                 vec = Vector(accel_vec)
                 self.apply_run(e, vec, full_speed_len=defs.full_speed_accel)
-            elif not self.joystick.disabled:
+            elif self.joystick.joystick_active:
                 vec = self.joystick.vec * defs.person_speed
                 self.apply_run(e, vec)
 

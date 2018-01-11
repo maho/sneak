@@ -1,7 +1,6 @@
 # pylint: disable=attribute-defined-outside-init, wrong-import-position
 # import cProfile
 
-import os
 from random import randint
 import time
 
@@ -229,7 +228,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                                                            },
                                                            'friction': 1.0
                                                         }]},
-                                  'fear': {'attraction': defs.person_attraction, 
+                                'fear': {'attraction': defs.person_attraction,
                                            'repulsion': defs.person_repulsion,
                                            'nomove': True, 'shout': True},
                                 'animation': {'name': self.person_anim, 'loop': True},
@@ -359,26 +358,25 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         cw = float(cw)
         ch = float(ch)
 
-        # NOTE: lines shouldn't be parallel to OX or OY axis, otherwise segment_intersection will be false-negative
-        lines = [[(50, -100), (51, ch + 100)], 
-                 [(-100, ch - 50), (cw + 100, ch - 51)],
-                 [(cw - 51, ch + 100), (cw - 50, -100)],
-                 [(cw + 100, 51), (- 100, 50)]]
+        lines = [[(50, -100), (50, ch + 100)],
+                 [(-100, ch - 50), (cw + 100, ch - 50)],
+                 [(cw - 50, ch + 100), (cw - 50, -100)],
+                 [(cw + 100, 50), (- 100, 50)]]
 
         wcx, wcy = self.camera.get_camera_center()
 
         arrow_tip = None
 
         for v1, v2 in lines:
-            #line of boundary in world coordinates
+            # line of boundary in world coordinates
             wv1 = self.camera.convert_from_screen_to_world(v1)
             wv2 = self.camera.convert_from_screen_to_world(v2)
 
-            #line from center camera to center of stones
+            # line from center camera to center of stones
             ws1 = (float(wcx), float(wcy))
-            ws2 = (float(mapw/2), float(maph/2))
+            ws2 = (float(mapw / 2), float(maph / 2))
 
-            #intersection between them
+            # intersection between them
             intersection = Vector.segment_intersection(wv1, wv2, ws1, ws2)
             if intersection:
                 arrow_tip = intersection
