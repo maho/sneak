@@ -13,7 +13,7 @@ from kivy.app import App  # noqa: E402
 from kivy.base import EventLoop
 from kivy.clock import Clock  # noqa: E402
 from kivy.core.window import Keyboard, Window
-# from kivy.logger import Logger
+from kivy.logger import Logger
 from kivy.vector import Vector  # noqa: E402
 from kivy.properties import NumericProperty, ObjectProperty  # noqa: E402
 from kivy.uix.widget import Widget  # noqa: E402
@@ -132,6 +132,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                 self.rat_speed[i] = int(self.rat_speed[i] * rsmult + rsadd)
 
         self.gameworld.state = 'levelnum'
+        Logger.debug("state1: levelnum")
 
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
@@ -142,6 +143,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def on_play(self):
         self.gameworld.state = 'main'
+        Logger.debug("state2: main")
         self.draw_some_stuff()
         self.grace_timestamp = time.time() + defs.grace_time
 
@@ -313,14 +315,20 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         if self.lives < 0:
             self.gameworld.state = 'gameover'
+            Logger.debug("state3: gameover")
             self.gameworld.sound_manager.play('go')
             return
 
         self.gameworld.state = 'fail'
+        Logger.debug("state4: fail")
         self.gameworld.sound_manager.play('fail')
 
         def _fn(_dt):
+            if self.gameworld.state != 'fail':
+                # it means that we have lost or won in the meantime
+                return
             self.gameworld.state = 'main'
+            Logger.debug("state5: main")
             self.grace_timestamp = time.time() + defs.grace_time
 
         Clock.schedule_once(_fn, defs.freeze_time)
