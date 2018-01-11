@@ -47,7 +47,10 @@ inf = 1.0e10  # potential in place/tile of attraction/repulsion
 
 
 if "DEBUG" in os.environ:
-    num_rats = 50
+    at_turn_angle = math.radians(1)
+    rat_speed = [2,3]
+    num_rats = 1
+    num_stones = 0
     # force_threshold = 2
-    initial_lives = 1
+    initial_lives = 100
     lives_add = 0

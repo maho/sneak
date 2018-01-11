@@ -32,6 +32,10 @@ def debcom(com):
     return "[#%s c:%0.2f]" % (com.entity_id, com.courage)
 
 
+def debarr(arr):
+    return "[" + ", ".join(["%0.1f" % (x * 180 / pi) for x in arr]) + "]"
+
+
 class Fear(GameSystem):
     # static data
     pre_computed_fields = {}
@@ -192,14 +196,18 @@ class Fear(GameSystem):
 
     @classmethod
     def calculate_desired_angles(cls, comps, entities, vels):
-        desired_angles = np.arctan2(vels[:, 1], vels[:, 0]) + pi / 2
+        # arctan is between OX axis and (0,0)->(x,y) line counterclockwise
+        # but character angle (body.angle) is counted as angle between OY axis and (0,0)->(x,y)
+        # (x,y) vector, rotated by 90deg clokwise is (y, -x)
+        # so it's vels[:, 1], -vels[: 0]
+        desired_angles = np.arctan2(-vels[:, 0], vels[:, 1])
         runornots = np.linalg.norm(vels, axis=1) > defs.force_threshold
-        real_angles = np.array([e.rotate.r for e in entities])
+        real_angles = np.array([e.cymunk_physics.body.angle for e in entities])
 
         anglediffs = (desired_angles - real_angles + 3 * pi) % (2 * pi) - pi
         rat_speeds = np.where(runornots, np.array([c.rat_speed for c in comps]), 0)
 
-        real_angles = np.where(anglediffs < 0, real_angles + defs.rat_turn_angle,
+        real_angles = np.where(anglediffs > 0, real_angles + defs.rat_turn_angle,
                                                 real_angles - defs.rat_turn_angle)
 
         final_vels = np.vstack((-np.sin(real_angles), np.cos(real_angles))) * rat_speeds
