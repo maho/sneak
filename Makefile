@@ -7,10 +7,10 @@ atlas: assets/objects.atlas
 assets/objects.atlas: $(wildcard img/*.png)
 	python -m kivy.atlas assets/objects 512x512 $(wildcard img/*.png)
 
-uprel:
+.release: $(wildcard assets/fonts/* assets/glsl/ *.py snd/* *.kv) assets/objects.atlas
 	echo $$(($$(cat .release) + 1)) > .release
 
-debug: uprel
+debug: .release
 	sudo -EH -u bdozer utils/buildozer.sh --verbose android debug deploy run logcat
 
 debugrun:
@@ -29,7 +29,7 @@ RELAPKPATH=bin/$(RELAPKNAME)
 
 release: $(RELAPKPATH)
 
-$(RELAPKPATH): uprel atlas
+$(RELAPKPATH): .release atlas
 	sudo -EH -u bdozer utils/buildozer.sh --verbose android release
 	# cp -v .buildozer/android/platform/build/dists/sneakk/bin/$(RELAPKNAME) bin/
 

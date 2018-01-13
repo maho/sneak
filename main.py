@@ -1,7 +1,8 @@
-# pylint: disable=attribute-defined-outside-init, wrong-import-position
+# pylint: disable=attribute-defined-outside-init, wrong-import-position, unused-import
 # import cProfile
 
-from random import randint
+from math import sqrt
+from random import randint, choice
 import time
 
 
@@ -119,12 +120,10 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         else:
             radd, rmult = defs.numrats_change
             stoadd, stomult = defs.numstones_change
-            mapadd, mapmult = defs.mapsize_change
             rsadd, rsmult = defs.rat_speed_incr
 
             self.num_rats = min(int(self.num_rats * rmult + radd), defs.numrats_limit)
             self.num_stones = int(self.num_stones * stomult + stoadd)
-            # self.gamemap.map_size = [int(x * mapmult + mapadd) for x in self.gamemap.map_size] # TODO
             self.lives = min(self.lives + defs.lives_add, defs.max_lives)
             self.gameworld.sound_manager.play('lu')
 
@@ -207,6 +206,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
     def draw_some_stuff(self):
         # draw person
         self.gameworld.clear_entities()
+        self.map_size = int(sqrt(defs.map_area_per_stone * self.num_stones))
         self.draw_rats()
         self.draw_stones()
         self.draw_person()
@@ -248,7 +248,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def draw_stones(self):
         self.stones_in_game = set()
-        mapw, maph = [defs.map_size_per_stone * self.num_stones] * 2
+        mapw, maph = self.map_size, self.map_size 
         # draw stones
         for _x in range(self.num_stones):
             seid = self.gameworld.init_entity(
@@ -277,7 +277,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.update_stones_center()
 
     def draw_rats(self):
-        mapw, maph = [defs.map_size_per_stone * self.num_stones] * 2
+        mapw, maph = self.map_size, self.map_size 
         # draw rats
         for _x in range(self.num_rats):
             self.gameworld.init_entity(
@@ -355,21 +355,15 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.stones_in_game.remove(esto)
         self.num_stones_left = len(self.stones_in_game)
         self.gameworld.sound_manager.play('stone')
-        self.update_stones_center()
         if not self.stones_in_game:
             self.advance_level()
+        else:
+            self.update_stones_center()
 
         return True
 
     def update_stones_center(self):
-        sumx, sumy = 0, 0
-        for seid in self.stones_in_game:
-            se = self.gameworld.entities[seid]
-            sumx += se.position.pos[0]
-            sumy += se.position.pos[1]
-
-        self.stones_center = (sumx / len(self.stones_in_game),
-                              sumy / len(self.stones_in_game))
+        self.stones_center = self.gameworld.entities[choice(list(self.stones_in_game))].position.pos
 
     def update_arrow(self, _dt):
         if not self.stones_center:

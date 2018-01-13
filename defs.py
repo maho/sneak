@@ -2,7 +2,7 @@ import math
 import os
 
 # level specific data
-map_size_per_stone = 200
+map_area_per_stone = 150000
 num_stones = 5
 num_rats = 3
 
@@ -21,7 +21,6 @@ grace_time = 2
 numrats_change = 3, 1.1  # on advance level, add, multipiler
 numrats_limit = 200
 numstones_change = 1, 1  # on advance level
-mapsize_change = 200, 1  # on advance level
 initial_lives = 3
 lives_add = 1
 max_lives = 4
@@ -48,7 +47,7 @@ inf = 1.0e10  # potential in place/tile of attraction/repulsion
 
 if "DEBUG" in os.environ:
     at_turn_angle = math.radians(1)
-    rat_speed = [2,3]
+    rat_speed = [2, 3]
     num_rats = 1
     num_stones = 0
     # force_threshold = 2
