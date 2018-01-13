@@ -1,4 +1,4 @@
-BASE_VERSION=0.21
+BASE_VERSION=0.23
 VERSION=$(BASE_VERSION).$(shell cat .release)
 
 

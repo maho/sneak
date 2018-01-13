@@ -184,6 +184,10 @@ SneakGame:
                         text: "Continue"
                         on_press: root.game.on_play()
                         # text_size: self.size
+                    Button:
+                        text: "Play Hard"
+                        disabled: root.game.levelnum != 0
+                        on_press: root.game.on_play(hard=True)
                     Widget:
                         size_hint: 0.1, 0.2
 

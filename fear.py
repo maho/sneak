@@ -74,7 +74,7 @@ class Fear(GameSystem):
     def on_key_up(self, _win, key, *_args, **_kwargs):
         code = Keyboard.keycode_to_string(Window._system_keyboard, key)
 
-        if code != 'a':
+        if code != 'a' and code != 'spacebar':
             return
 
         self.shout()

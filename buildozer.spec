@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = Sneakk
+title = sneakk
 
 # (str) Package name
 package.name = sneakk

@@ -2,7 +2,7 @@ import math
 import os
 
 # level specific data
-map_size = (1000, 1000)
+map_size_per_stone = 200
 num_stones = 5
 num_rats = 3
 

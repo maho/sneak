@@ -69,7 +69,7 @@ class VirtualJoystick(Widget):
         if "vjtouch" not in touch.ud:
             return
         self.touch = self.center[:]
-        self.disable()
+        self.disable_joystick()
 
     def on_touch_down(self, touch):
         self.center = touch.pos

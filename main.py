@@ -57,6 +57,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
         self.num_rats = defs.num_rats
         self.num_stones = defs.num_stones
+        self.stones_center = None
 
         self.person_anim = 'walk'
 
@@ -140,7 +141,13 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
             self.on_play()
             return True
 
-    def on_play(self):
+    def on_play(self, hard=False):
+
+        # dirty trick
+        if hard:
+            for x in range(9):
+                self.advance_level()
+
         self.gameworld.state = 'main'
         Logger.debug("state2: main")
         self.draw_some_stuff()
@@ -241,7 +248,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
     def draw_stones(self):
         self.stones_in_game = set()
-        mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
+        mapw, maph = [defs.map_size_per_stone * self.num_stones] * 2
         # draw stones
         for _x in range(self.num_stones):
             seid = self.gameworld.init_entity(
@@ -267,9 +274,10 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
                            )
             self.stones_in_game.add(seid)
         self.num_stones_left = len(self.stones_in_game)
+        self.update_stones_center()
 
     def draw_rats(self):
-        mapw, maph = defs.map_size
+        mapw, maph = [defs.map_size_per_stone * self.num_stones] * 2
         # draw rats
         for _x in range(self.num_rats):
             self.gameworld.init_entity(
@@ -347,13 +355,26 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
         self.stones_in_game.remove(esto)
         self.num_stones_left = len(self.stones_in_game)
         self.gameworld.sound_manager.play('stone')
+        self.update_stones_center()
         if not self.stones_in_game:
             self.advance_level()
 
         return True
 
+    def update_stones_center(self):
+        sumx, sumy = 0, 0
+        for seid in self.stones_in_game:
+            se = self.gameworld.entities[seid]
+            sumx += se.position.pos[0]
+            sumy += se.position.pos[1]
+
+        self.stones_center = (sumx / len(self.stones_in_game),
+                              sumy / len(self.stones_in_game))
+
     def update_arrow(self, _dt):
-        mapw, maph = defs.map_size  # self.gamemap.map_size # TODO
+        if not self.stones_center:
+            return
+        sx, sy = self.stones_center
         cw, ch = self.camera.size
         cw = float(cw)
         ch = float(ch)
@@ -374,7 +395,7 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
             # line from center camera to center of stones
             ws1 = (float(wcx), float(wcy))
-            ws2 = (float(mapw / 2), float(maph / 2))
+            ws2 = (float(sx), float(sy))
 
             # intersection between them
             intersection = Vector.segment_intersection(wv1, wv2, ws1, ws2)
