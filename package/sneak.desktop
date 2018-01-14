@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Sneak
+Exec=sneak
+Icon=/opt/sneak/sneak.png
+Type=Application
+Categories=Game
+Terminal=false

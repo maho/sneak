@@ -38,3 +38,27 @@ upload: $(RELAPKPATH)
 
 
 
+## linux dist
+DISTDIR=$(CURDIR)/dist/$(VERSION)
+PYINSTDIR=$(DISTDIR)/pyinstaller$(SUFFIX)
+TARGZPATH=$(DISTDIR)/khamster$(SUFFIX)-$(VERSION)-amd64.tar.gz
+
+targz:
+	make $(TARGZPATH)
+
+$(TARGZPATH): $(PYINSTDIR)/opt
+	cd $(PYINSTDIR)/opt && fakeroot tar zcf $(TARGZPATH) sneak
+
+$(PYINSTDIR)/opt $(PYINSTDIR)/usr: 
+	make atlas .release
+	rm -rf $(PYINSTDIR)/opt
+	pyinstaller -y --distpath="$(PYINSTDIR)/opt" pyinstaller.spec 2>.pyinstaller.log
+	echo '#!/bin/sh\ncd $$(dirname $$0) && KIVY_AUDIO=sdl2 ./sneak.bin\n' > $(PYINSTDIR)/opt/sneak/sneak
+	chmod a+x $(PYINSTDIR)/opt/sneak/sneak
+	rm -rf $(PYINSTDIR)/usr
+	cd $(PYINSTDIR) && mkdir -p usr/local/bin && echo '#!/bin/sh\n/opt/sneak/sneak "$$@"' > usr/local/bin/sneak && chmod a+x usr/local/bin/sneak
+	cp -v package/sneak.png $(PYINSTDIR)/opt/sneak/
+	mkdir -p $(PYINSTDIR)/usr/share/applications
+	cp -v package/sneak.desktop $(PYINSTDIR)/usr/share/applications
+
+

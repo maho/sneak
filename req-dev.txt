@@ -2,3 +2,4 @@ pylint
 autopep8
 flake8
 pudb
+pyinstaller
