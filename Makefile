@@ -40,16 +40,21 @@ upload: $(RELAPKPATH)
 
 ## linux dist
 DISTDIR=$(CURDIR)/dist/$(VERSION)
-PYINSTDIR=$(DISTDIR)/pyinstaller$(SUFFIX)
-TARGZPATH=$(DISTDIR)/khamster$(SUFFIX)-$(VERSION)-amd64.tar.gz
+PYINSTDIR=$(DISTDIR)/pyinstaller
+PYINSTBIN=$(PYINSTDIR)/opt/sneak/sneak.bin
+TARGZPATH=$(DISTDIR)/sneak-$(VERSION)-amd64.tar.gz
+
+x:
+	echo $(PYINSTDIR)
 
 targz:
+	mkdir -p $(DISTDIR)
 	make $(TARGZPATH)
 
-$(TARGZPATH): $(PYINSTDIR)/opt
+$(TARGZPATH): $(PYINSTBIN)
 	cd $(PYINSTDIR)/opt && fakeroot tar zcf $(TARGZPATH) sneak
 
-$(PYINSTDIR)/opt $(PYINSTDIR)/usr: 
+$(PYINSTBIN):
 	make atlas .release
 	rm -rf $(PYINSTDIR)/opt
 	pyinstaller -y --distpath="$(PYINSTDIR)/opt" pyinstaller.spec 2>.pyinstaller.log

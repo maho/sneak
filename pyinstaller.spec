@@ -13,9 +13,8 @@ a = Analysis(['main.py'],
                     ('assets/objects*.png', 'assets'),
                     ('assets/objects.atlas', 'assets'),
                     ('assets/glsl', 'assets/glsl'),
-                    ('assets/levels', 'assets/levels'),
-                    ('assets/ttf', 'assets/ttf'),
-                    ('snd/*.ogg', 'snd'),
+                    ('assets/fonts', 'assets/fonts'),
+                    ('snd/*.ogg', 'snd')],
              hiddenimports=[
                             'importlib', 
                             'redminelib', 'redminelib.resources', 
@@ -48,7 +47,7 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='khamster')
+               name='sneak')
 
 # vim: set syntax=python:
 
