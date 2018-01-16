@@ -1,5 +1,6 @@
 BASE_VERSION=0.23
-VERSION=$(BASE_VERSION).$(shell cat .release)
+RELEASE=$(shell cat .release)
+VERSION=$(BASE_VERSION).$(RELEASE)
 
 
 atlas: assets/objects.atlas
@@ -43,6 +44,8 @@ DISTDIR=$(CURDIR)/dist/$(VERSION)
 PYINSTDIR=$(DISTDIR)/pyinstaller
 PYINSTBIN=$(PYINSTDIR)/opt/sneak/sneak.bin
 TARGZPATH=$(DISTDIR)/sneak-$(VERSION)-amd64.tar.gz
+DEBPATH=$(DISTDIR)/sneak_$(VERSION)-1_amd64.deb
+INTERMEDIARYTARBZ=$(PYINSTDIR)/sneak-$(VERSION).tar.gz
 
 x:
 	echo $(PYINSTDIR)
@@ -65,5 +68,16 @@ $(PYINSTBIN):
 	cp -v package/sneak.png $(PYINSTDIR)/opt/sneak/
 	mkdir -p $(PYINSTDIR)/usr/share/applications
 	cp -v package/sneak.desktop $(PYINSTDIR)/usr/share/applications
+
+$(INTERMEDIARYTARBZ): $(PYINSTBIN) $(PYINSTDIR)/usr/share/applications/sneak.desktop
+	cd $(PYINSTDIR) && fakeroot tar zcf $(INTERMEDIARYTARBZ) opt usr
+
+$(DEBPATH): $(INTERMEDIARYTARBZ)
+	cd $(PYINSTDIR) && fakeroot alien -k --to-deb --target=amd64 $(INTERMEDIARYTARBZ)
+	mv -v $(PYINSTDIR)/*.deb $(DISTDIR)/
+	echo "$(SUFFIX)" > $(DEBPATH).suffix
+
+deb:
+	make $(DEBPATH)
 
 
