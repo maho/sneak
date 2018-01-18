@@ -51,10 +51,10 @@ requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,g
 #garden_requirements =
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/img/splash.gif
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/img/shout-0.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = landscape
@@ -183,6 +183,7 @@ android.permissions = VIBRATE
 
 # (str) Android logcat filters to use
 android.logcat_filters = *:S python:D
+android.java_build_tool = ant
 
 # (bool) Copy library instead of making a libpymodules.so
 #android.copy_libs = 1
@@ -225,7 +226,6 @@ p4a.source_dir = /home/maho/workspace/sneak/.p4a
 [buildozer]
 
 
-build_type = ant
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
