@@ -51,7 +51,7 @@ requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,g
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/img/splash.gif
+presplash.filename = %(source.dir)s/img/gplay/splash.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/img/shout-0.png
