@@ -96,7 +96,7 @@ android.permissions = VIBRATE
 #android.api = 19
 
 # (int) Minimum API required
-#android.minapi = 9
+android.minapi = 23
 
 # (int) Android SDK version to use
 # android.sdk = 25
