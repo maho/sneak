@@ -12,18 +12,18 @@ PYWEEK 24
 
 This game was started for https://pyweek.org/24/, but it appeared, that it's easier to write game in 2 days (alakajam#1) , than in one week. I barely started game within week, and I have just finished it now (well, "finished" is big word, it's just quite playable). 
 
-(Sheep wrote wery wise words, in https://pyweek.org/e/pewpew/: "Somehow I can't get this done, even with the simplest of games. I have no problem making a game in 48 hours, but a week is simply not enough time.")
+(Sheep wrote wery wise words, in https://pyweek.org/e/pewpew/: *Somehow I can't get this done, even with the simplest of games. I have no problem making a game in 48 hours, but a week is simply not enough time.*)
 
 CONTROLS
 --------
 
-# linux/windows
+### linux/windows
 
 * left, right - rotate traveller
 * up - run
 * 'a' or space - shout
 
-# android
+### android
 
 * either virtual joystick (just tap somewhere on the screen) and 'shout' button, 
 * or click 'use accelerometer' button on start screen and use accelerometer to move traveller to and through
