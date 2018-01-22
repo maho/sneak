@@ -40,9 +40,10 @@ to build for Android: buildozer
 BINARY PACKAGES
 ---------------
 
-For android: http://play.google.com/apps/testing/maho.sneakk
+Android: http://play.google.com/apps/testing/maho.sneakk
 
-For linux: coming soon
+Linux: https://mahomaho.itch.io/sneak
+
 
 
 
