@@ -44,8 +44,6 @@ requirements = hostpython2,kivy,cymunk,kivent_core,kivent_cymunk,numpy,android,g
 
 
 # (str) Custom source folders for requirements
-# Sets custom source for any requirements with recipes
-# requirements.source.kivy = ../../kivy
 
 # (list) Garden requirements
 #garden_requirements =
@@ -96,7 +94,7 @@ android.permissions = VIBRATE
 #android.api = 19
 
 # (int) Minimum API required
-android.minapi = 23
+# android.minapi = 23
 
 # (int) Android SDK version to use
 # android.sdk = 25
@@ -183,7 +181,7 @@ android.minapi = 23
 
 # (str) Android logcat filters to use
 android.logcat_filters = *:S python:D
-android.java_build_tool = ant
+# android.java_build_tool = ant
 
 # (bool) Copy library instead of making a libpymodules.so
 #android.copy_libs = 1
@@ -278,4 +276,3 @@ warn_on_root = 1
 #buildozer --profile demo android debug
 
 # [app@p2]
-

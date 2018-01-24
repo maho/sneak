@@ -1,4 +1,4 @@
-BASE_VERSION=0.23
+BASE_VERSION=0.24
 RELEASE=$(shell cat .release)
 VERSION=$(BASE_VERSION).$(RELEASE)
 
@@ -8,7 +8,7 @@ atlas: assets/objects.atlas
 assets/objects.atlas: $(wildcard img/*.png)
 	python -m kivy.atlas assets/objects 512x512 $(wildcard img/*.png)
 
-.release: $(wildcard assets/fonts/* assets/glsl/ *.py snd/* *.kv) assets/objects.atlas
+.release: $(wildcard assets/fonts/* assets/glsl/ *.py snd/* *.kv) assets/objects.atlas buildozer.spec Makefile
 	echo $$(($$(cat .release) + 1)) > .release
 
 debug: .release
@@ -24,6 +24,7 @@ export P4A_RELEASE_KEYALIAS_PASSWD=$(shell cat .keypass)
 
 export APP_VERSION=$(VERSION)
 export URL_kivy=https://github.com/mahomahomaho/kivy/archive/master2.zip
+export URL_kivent_core=https://github.com/mahomahomaho/kivent/archive/mymaster3.zip
 
 RELAPKNAME=sneakk-$(VERSION)-release.apk
 RELAPKPATH=bin/$(RELAPKNAME)
