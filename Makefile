@@ -81,4 +81,13 @@ $(DEBPATH): $(INTERMEDIARYTARBZ)
 deb:
 	make $(DEBPATH)
 
+EXEPATH=$(DISTDIR)/sneak_$(VERSION).exe
+
+$(EXEPATH):
+	make atlas .release
+	windist/vw/bin/wine pyinstaller -y --distpath="$(PYINSTDIR)" sneak-win.spec 2>.pyinstaller-win.log
+	mv $(PYINSTDIR)/sneak-win.exe $(EXEPATH)
+
+exe:
+	make $(EXEPATH)
 
