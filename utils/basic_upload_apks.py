@@ -21,7 +21,7 @@ import sys
 from apiclient import sample_tools
 from oauth2client import client
 
-TRACK = 'alpha'  # Can be 'alpha', beta', 'production' or 'rollout'
+TRACK = 'beta'  # Can be 'alpha', beta', 'production' or 'rollout'
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)

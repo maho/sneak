@@ -4,9 +4,16 @@
 from math import sqrt
 from random import randint, choice
 import time
+import os, sys
+
+if hasattr(sys, '_MEIPASS') and sys._MEIPASS:
+    basedir = sys._MEIPASS
+    print "basedir=", basedir
+    os.chdir(basedir)
 
 
-# from kivy.config import Config
+from kivy.config import Config
+Config.set('graphics', 'multisamples', '0')
 # Config.set('kivy', 'log_level', 'debug')
 #
 from kivy.app import App  # noqa: E402
@@ -416,10 +423,9 @@ class SneakApp(App):
     pass
 
 
-print("ENDBODY")
 
 if __name__ == '__main__':
-    print("BEFORE")
+
     # if "DEBUG" in os.environ:
     #     def debug_signal_handler(__sig, __frame):
     #         import pudb
@@ -429,4 +435,3 @@ if __name__ == '__main__':
     #     signal.signal(signal.SIGINT, debug_signal_handler)
 
     SneakApp().run()
-    print("AFTER")

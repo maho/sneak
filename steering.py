@@ -35,6 +35,7 @@ class SneakSteeringSystem(GameSystem):
             try:
                 spatialorientation.enable_listener()
                 x, y, z = spatialorientation.orientation
+                # Logger.debug("x, y, z = %s, %s, %s", x, y, z)
                 if not x and not y and not z:
                     Clock.schedule_once(partial(self.set_accelerometer, tb), 0.3)
                     Logger.debug("not ready yet")
