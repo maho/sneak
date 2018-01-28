@@ -2,6 +2,7 @@
 # import cProfile
 
 from math import sqrt
+from functools import partial
 from random import randint, choice
 import time
 import os, sys
@@ -409,6 +410,28 @@ class SneakGame(Widget):  # pylint: disable=too-many-instance-attributes
 
 
 class SneakApp(App):
+
+    def build(self):
+        from kivy.base import EventLoop
+        EventLoop.window.bind(on_key_down=self.on_key_down)
+    
+    def on_resize(self, win, width, height):
+        Config.set('graphics', 'width', width)
+        Config.set('graphics', 'height', height)
+        Config.write()
+
+    def on_key_down(self, win, key, scancode, codepoint, modifier):
+        code = Keyboard.keycode_to_string(Window._system_keyboard, key)
+        if key == 13 and modifier == ['alt'] or code == 'f11':
+            Clock.schedule_once(partial(self.toggle_fs, win), 0.1)
+            return True
+
+    def toggle_fs(self, win, _dt=None):
+        win.fullscreen = 'auto' if not win.fullscreen else False
+
+        Config.set('graphics', 'fullscreen', win.fullscreen)
+        Config.write()
+
     #
     # def on_start(self):
     #     if "PROFILE" in os.environ:
@@ -426,12 +449,6 @@ class SneakApp(App):
 
 if __name__ == '__main__':
 
-    # if "DEBUG" in os.environ:
-    #     def debug_signal_handler(__sig, __frame):
-    #         import pudb
-    #         pudb.set_trace()
-
-    #     import signal
-    #     signal.signal(signal.SIGINT, debug_signal_handler)
+    Window.fullscreen = 'auto'
 
     SneakApp().run()
